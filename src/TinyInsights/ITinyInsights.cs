@@ -9,8 +9,8 @@ namespace TinyInsights
     {
         Task TrackErrorAsync(Exception ex);
 
-        Task TrackViewAsync(string viewname);
-        Task TrackViewAsync(string viewName, Dictionary<string, string> properties);
+        Task TrackPageViewAsync(string viewname);
+        Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties);
 
         Task TrackEventAsync(string eventName);
         Task TrackEventAsync(string eventName, Dictionary<string, string> properties);
