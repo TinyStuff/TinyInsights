@@ -25,11 +25,8 @@ namespace TinyInsightsLib
             
             foreach(var provider in insightsProviders)
             {
-                if(provider.IsTrackErrorsEnabled)
-                {
                     var task = provider.TrackErrorAsync(ex);
                     tasks.Add(task);
-                }
             }
 
             await Task.WhenAll(tasks);
@@ -41,11 +38,8 @@ namespace TinyInsightsLib
 
             foreach (var provider in insightsProviders)
             {
-                if (provider.IsTrackPageViewsEnabled)
-                {
                     var task = provider.TrackPageViewAsync(viewName);
                     tasks.Add(task);
-                }
             }
 
             await Task.WhenAll(tasks);
@@ -57,11 +51,8 @@ namespace TinyInsightsLib
 
             foreach (var provider in insightsProviders)
             {
-                if (provider.IsTrackPageViewsEnabled)
-                {
                     var task = provider.TrackPageViewAsync(viewName, properties);
                     tasks.Add(task);
-                }
             }
 
             await Task.WhenAll(tasks);
@@ -73,11 +64,8 @@ namespace TinyInsightsLib
 
             foreach (var provider in insightsProviders)
             {
-                if (provider.IsTrackEventsEnabled)
-                {
                     var task = provider.TrackEventAsync(eventName);
                     tasks.Add(task);
-                }
             }
 
             await Task.WhenAll(tasks);
@@ -89,11 +77,8 @@ namespace TinyInsightsLib
 
             foreach (var provider in insightsProviders)
             {
-                if (provider.IsTrackEventsEnabled)
-                {
                     var task = provider.TrackEventAsync(eventName, properties);
                     tasks.Add(task);
-                }
             }
 
             await Task.WhenAll(tasks);
