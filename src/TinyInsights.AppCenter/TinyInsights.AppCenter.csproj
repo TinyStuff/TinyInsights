@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageLicenseUrl>https://github.com/TinyStuff/TinyInsights/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/TinyStuff/TinyInsights</PackageProjectUrl>
+    <PackageTags>xamarin appcenter</PackageTags>
+    <Title>TinyInsights, AppCenter provider</Title>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,5 +14,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AppCenter.Crashes" Version="1.4.0" />
     <PackageReference Include="Microsoft.AppCenter.Analytics" Version="1.4.0" />
+    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
   </ItemGroup>
 </Project>

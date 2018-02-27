@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Daniel Hindrikes</Authors>
+    <PackageIconUrl>https://github.com/TinyStuff/TinyInsights/blob/master/LICENSE</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/TinyStuff/TinyInsights</PackageProjectUrl>
+    <PackageTags>xamarin</PackageTags>
+    <Title>TinyInsights</Title>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
+  </ItemGroup>
 </Project>
