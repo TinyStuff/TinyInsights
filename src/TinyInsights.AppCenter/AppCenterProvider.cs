@@ -16,9 +16,9 @@ namespace TinyInsightsLib.AppCenter
         }
 
 
-        public bool IsTrackErrorsEnabled { get; set; }
-        public bool IsTrackPageViewsEnabled { get; set; }
-        public bool IsTrackEventsEnabled { get; set; }
+        public bool IsTrackErrorsEnabled { get; set; } = true;
+        public bool IsTrackPageViewsEnabled { get; set; } = true;
+        public bool IsTrackEventsEnabled { get; set; } = true;
 
         public async Task TrackErrorAsync(Exception ex)
         {
