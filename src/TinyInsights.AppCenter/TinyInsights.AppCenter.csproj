@@ -9,6 +9,7 @@
     <PackageId>TinyInsights.AppCenter</PackageId>
     <PackageVersion>1.0.0</PackageVersion>
     <Authors>Daniel Hindrikes</Authors>
+    <Description>TinyInsights is an abstraction for multiple analytics provicers. This is a provider fopr Azure App Center.</Description>
   </PropertyGroup>
 
   <ItemGroup>

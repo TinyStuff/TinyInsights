@@ -9,6 +9,7 @@
     <Title>TinyInsights</Title>
     <PackageId>TinyInsights</PackageId>
     <PackageVersion>1.0.0</PackageVersion>
+    <Description>TinyInsights is an abstraction for multiple analytics provicers. </Description>
   </PropertyGroup>
 
   <ItemGroup>
