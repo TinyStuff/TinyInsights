@@ -29,3 +29,42 @@ var appCenterProvider = new AppCenterProvider(iOSKey, AndroidKey, UWPKey)
 TinyInsights.Configure(appCenterProvider);
 ```
 
+When multiple providers will be available you can use them simultaneously, just  use configure for all of the providers.
+
+```csharp
+TinyInsights.Configure(appCenterProvider, provider 2, provider3);
+```
+
+### Track errors
+This is not implemented in App Center yet.
+
+```csharp
+catch(Ecception ex)
+{
+     await TinyInsights.TrackErrorAsync(ex);
+}
+```
+
+### Track page views
+```csharp
+await TinyInsights.TrackPageViewAsync("SuperCoolView");
+
+//with properties
+var properties = new  Dictionarty<string, string>();
+properties.Add("MyFirstProperty", "MyFirstValue");
+properties.Add("MySecondProperty", "MySeconndValue");
+
+await TinyInsights.TrackPageViewAsync("SuperCoolView", properties);
+```
+
+### Track custom events
+```csharp
+await TinyInsights.TrackEventAsync("SuperCoolEvent");
+
+//with properties
+var properties = new  Dictionarty<string, string>();
+properties.Add("MyFirstProperty", "MyFirstValue");
+properties.Add("MySecondProperty", "MySeconndValue");
+
+await TinyInsights.TrackEventAsync("SuperCoolEvent", properties);
+```
