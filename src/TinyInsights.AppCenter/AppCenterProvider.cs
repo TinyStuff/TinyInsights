@@ -24,7 +24,7 @@ namespace TinyInsightsLib.AppCenter
         {
             if(IsTrackEventsEnabled)
             {
-               //Not implemented in SDK yet
+                Crashes.TrackError(ex);
             }
         }
 
