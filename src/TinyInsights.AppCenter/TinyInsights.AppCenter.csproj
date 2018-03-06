@@ -16,8 +16,8 @@
     <ProjectReference Include="..\TinyInsights\TinyInsights.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="1.4.0" />
-    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="1.4.0" />
     <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
+    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="1.5.0" />
+    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="1.5.0" />
   </ItemGroup>
 </Project>
