@@ -10,13 +10,13 @@
     <PackageVersion>1.0.0</PackageVersion>
     <Authors>Daniel Hindrikes</Authors>
     <Description>TinyInsights is an abstraction for multiple analytics provicers. This is a provider fopr Azure App Center.</Description>
+    <PackOnBuild>true</PackOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TinyInsights\TinyInsights.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
     <PackageReference Include="Microsoft.AppCenter.Crashes" Version="1.5.0" />
     <PackageReference Include="Microsoft.AppCenter.Analytics" Version="1.5.0" />
   </ItemGroup>

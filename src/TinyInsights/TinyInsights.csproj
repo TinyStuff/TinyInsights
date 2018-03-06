@@ -12,7 +12,4 @@
     <Description>TinyInsights is an abstraction for multiple analytics provicers. </Description>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
-  </ItemGroup>
 </Project>
