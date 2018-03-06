@@ -1,41 +1,75 @@
-﻿using System;
+﻿using Google.Analytics;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using TinyInsights;
 using TinyInsightsLib;
+using System.Linq;
 
 namespace TinyInsights.GoogleAnalytics.iOS
 {
     public class GoogleAnalyticsProvider : ITinyInsightsProvider
     {
-        public bool IsTrackErrorsEnabled { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public bool IsTrackPageViewsEnabled { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public bool IsTrackEventsEnabled { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        private ITracker Tracker;
 
-        public Task TrackErrorAsync(Exception ex)
+        public bool IsTrackErrorsEnabled { get; set; }
+        public bool IsTrackPageViewsEnabled { get; set; }
+        public bool IsTrackEventsEnabled { get; set; }
+
+        public GoogleAnalyticsProvider(string trackingId, bool catchUnhandledExceptions = true)
         {
-            throw new NotImplementedException();
+            Gai.SharedInstance.DispatchInterval = 20;
+            Gai.SharedInstance.TrackUncaughtExceptions = true;
+
+            Tracker = Gai.SharedInstance.GetTracker(trackingId);
+            Tracker.Set(GaiConstants.Language, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
         }
 
-        public Task TrackEventAsync(string eventName)
+        public async Task TrackErrorAsync(Exception ex)
         {
-            throw new NotImplementedException();
+            if(IsTrackErrorsEnabled)
+            {
+                Tracker.Send(DictionaryBuilder.CreateException(ex.Message, 0).Build());
+            }
         }
 
-        public Task TrackEventAsync(string eventName, Dictionary<string, string> properties)
+        public async Task TrackEventAsync(string eventName)
         {
-            throw new NotImplementedException();
+            await TrackEventAsync(eventName, null);
         }
 
-        public Task TrackPageViewAsync(string viewName)
+        public async Task TrackEventAsync(string eventName, Dictionary<string, string> properties)
         {
-            throw new NotImplementedException();
+            string action = string.Empty;
+            string label = string.Empty;
+
+            if(properties != null && properties.ContainsKey("action"))
+            {
+                action = properties["action"];
+            }
+
+            if (properties != null && properties.ContainsKey("label"))
+            {
+                action = properties["label"];
+            }
+
+            var eventToTrack = DictionaryBuilder.CreateEvent(eventName, action, label, 1).Build();
+            
+            Tracker.Send(eventToTrack);
         }
 
-        public Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
+        public async Task TrackPageViewAsync(string viewName)
         {
-            throw new NotImplementedException();
+            await TrackPageViewAsync(viewName, null);
+        }
+
+        public async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
+        {
+            Tracker.Set(GaiConstants.ScreenName, viewName);
+           
+            Tracker.Send(DictionaryBuilder.CreateScreenView().Build());
         }
     }
 }
