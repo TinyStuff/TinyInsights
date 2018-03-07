@@ -1,8 +1,32 @@
 <Project Sdk="MSBuild.Sdk.Extras/1.2.2">
 
   <PropertyGroup>
-    <TargetFrameworks>Xamarin.iOS10;monoandroid80</TargetFrameworks>
+    <TargetFrameworks>Xamarin.iOS10;monoandroid80;uap10.0.16299</TargetFrameworks>
+    <RootNamespace>TinyInsightsLib.GoogleAnalytics</RootNamespace>
+    
+    <PackageLicenseUrl>https://github.com/TinyStuff/TinyInsights/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/TinyStuff/TinyInsights</PackageProjectUrl>
+    <PackageTags>xamarin googleAnalytics</PackageTags>
+    <Title>TinyInsights, Google Analytics provider</Title>
+    <PackageId>TinyInsights.AppCenter</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Authors>Daniel Hindrikes</Authors>
+    <Description>TinyInsights is an abstraction for multiple analytics provicers. This is a provider for Google Analytics.</Description>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Android\**" Condition=" '$(TargetFramework)' != 'monoandroid80' " />
+    <Compile Remove="iOS\**" Condition=" '$(TargetFramework)' != 'Xamarin.iOS10' " />   
+    <Compile Remove="UWP\**" Condition=" '$(TargetFramework)' != 'uap10.0.16299' " />
+    
+    <EmbeddedResource Remove="Android\**" Condition=" '$(TargetFramework)' != 'monoandroid80' " />
+    <EmbeddedResource Remove="iOS\**" Condition=" '$(TargetFramework)' != 'Xamarin.iOS10' " />  
+    <EmbeddedResource Remove="UWP\**" Condition=" '$(TargetFramework)' != 'uap10.0.16299' " />
+    
+    <None Remove="Android\**" Condition=" '$(TargetFramework)' != 'monoandroid80' " />
+    <None Remove="iOS\**" Condition=" '$(TargetFramework)' != 'Xamarin.iOS10' " />    
+    <None Remove="UWP\**" Condition=" '$(TargetFramework)' != 'uap10.0.16299' " />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TinyInsights\TinyInsights.csproj" />
@@ -12,18 +36,15 @@
     <PackageReference Include="Xamarin.Google.iOS.Analytics" Version="3.17.0.2" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'monoandroid80'">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'monoandroid80' ">
     <PackageReference Include="Xamarin.GooglePlayServices.Analytics">
       <Version>60.1142.0</Version>
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'monoandroid80'">
-    <Folder Include="Android/" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'uap10.0.16299'">
+    <PackageReference Include="UWP.SDKforGoogleAnalytics.Managed">
+      <Version>1.5.2</Version>
+    </PackageReference>
   </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'Xamarin.iOS10'">
-    <Folder Include="iOS/" />
-  </ItemGroup>
-  
 </Project>

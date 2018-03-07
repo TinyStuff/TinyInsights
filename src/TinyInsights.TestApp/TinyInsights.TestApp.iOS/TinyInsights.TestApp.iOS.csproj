@@ -120,6 +120,23 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="2.5.0.280555" />
+    <PackageReference Include="Xamarin.Google.iOS.Analytics">
+      <Version>3.17.0.2</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\TinyInsights.AppCenter\TinyInsights.AppCenter.csproj">
+      <Project>{6de2817f-d4f5-4351-bd18-eab43806daaf}</Project>
+      <Name>TinyInsights.AppCenter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TinyInsights.GoogleAnalytics\TinyInsights.GoogleAnalytics.csproj">
+      <Project>{d1245135-ea42-4a64-861a-c35b383c6f05}</Project>
+      <Name>TinyInsights.GoogleAnalytics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TinyInsights\TinyInsights.csproj">
+      <Project>{90759fea-89bf-450c-9482-f28f8b1a4c60}</Project>
+      <Name>TinyInsights</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\TinyInsights.TestApp\TinyInsights.TestApp.projitems" Label="Shared" />

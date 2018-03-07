@@ -4,19 +4,18 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
-using TinyInsights;
 using TinyInsightsLib;
 using System.Linq;
 
-namespace TinyInsights.GoogleAnalytics.iOS
+namespace TinyInsightsLib.GoogleAnalytics
 {
     public class GoogleAnalyticsProvider : ITinyInsightsProvider
     {
         private ITracker Tracker;
 
-        public bool IsTrackErrorsEnabled { get; set; }
-        public bool IsTrackPageViewsEnabled { get; set; }
-        public bool IsTrackEventsEnabled { get; set; }
+        public bool IsTrackErrorsEnabled { get; set; } = true;
+        public bool IsTrackPageViewsEnabled { get; set; } = true;
+        public bool IsTrackEventsEnabled { get; set; } = true;
 
         public GoogleAnalyticsProvider(string trackingId, bool catchUnhandledExceptions = true)
         {
@@ -27,7 +26,7 @@ namespace TinyInsights.GoogleAnalytics.iOS
             Tracker.Set(GaiConstants.Language, CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
         }
 
-        public async Task TrackErrorAsync(Exception ex)
+        public virtual async Task TrackErrorAsync(Exception ex)
         {
             if(IsTrackErrorsEnabled)
             {
@@ -35,12 +34,12 @@ namespace TinyInsights.GoogleAnalytics.iOS
             }
         }
 
-        public async Task TrackEventAsync(string eventName)
+        public virtual async Task TrackEventAsync(string eventName)
         {
             await TrackEventAsync(eventName, null);
         }
 
-        public async Task TrackEventAsync(string eventName, Dictionary<string, string> properties)
+        public virtual async Task TrackEventAsync(string eventName, Dictionary<string, string> properties)
         {
             string action = string.Empty;
             string label = string.Empty;
@@ -52,20 +51,20 @@ namespace TinyInsights.GoogleAnalytics.iOS
 
             if (properties != null && properties.ContainsKey("label"))
             {
-                action = properties["label"];
+                label = properties["label"];
             }
 
-            var eventToTrack = DictionaryBuilder.CreateEvent(eventName, action, label, 1).Build();
+            var eventToTrack = DictionaryBuilder.CreateEvent(eventName.ToLower(), action.ToLower(), label.ToLower(), 1).Build();
             
             Tracker.Send(eventToTrack);
         }
 
-        public async Task TrackPageViewAsync(string viewName)
+        public virtual async Task TrackPageViewAsync(string viewName)
         {
             await TrackPageViewAsync(viewName, null);
         }
 
-        public async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
+        public virtual async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
         {
             Tracker.Set(GaiConstants.ScreenName, viewName);
            

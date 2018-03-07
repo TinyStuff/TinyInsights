@@ -43,7 +43,7 @@ namespace TinyInsightsLib.AppCenter
 
         public async Task TrackPageViewAsync(string viewName)
         {
-            await TrackPageViewAsync(viewName);
+            await TrackPageViewAsync(viewName, null);
         }
 
         public async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
