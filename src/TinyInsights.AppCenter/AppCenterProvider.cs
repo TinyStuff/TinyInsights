@@ -7,9 +7,9 @@ using System.Linq;
 
 namespace TinyInsightsLib.AppCenter
 {
-    public class MobileCenterProvider : ITinyInsightsProvider
+    public class AppCenterProvider : ITinyInsightsProvider
     {
-        public MobileCenterProvider(string iOSkey, string androidKey, string uwpKey)
+        public AppCenterProvider(string iOSkey, string androidKey, string uwpKey)
         {
             Microsoft.AppCenter.AppCenter.Start($"ios={iOSkey};uwp={uwpKey};android={androidKey}",
                                                       typeof(Analytics), typeof(Crashes));
