@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TinyInsightsLib;
 using System.Linq;
+using Foundation;
 
 namespace TinyInsightsLib.GoogleAnalytics
 {
@@ -43,10 +44,16 @@ namespace TinyInsightsLib.GoogleAnalytics
         {
             string action = string.Empty;
             string label = string.Empty;
+            int number = 0;
 
             if(properties != null && properties.ContainsKey("action"))
             {
                 action = properties["action"];
+            }
+
+            if (properties != null && properties.ContainsKey("number"))
+            {
+                int.TryParse(properties["number"], out number);
             }
 
             if (properties != null && properties.ContainsKey("label"))
@@ -54,8 +61,19 @@ namespace TinyInsightsLib.GoogleAnalytics
                 label = properties["label"];
             }
 
-            var eventToTrack = DictionaryBuilder.CreateEvent(eventName.ToLower(), action.ToLower(), label.ToLower(), 1).Build();
-            
+            var eventToTrack = DictionaryBuilder.CreateEvent(eventName.ToLower(), action.ToLower(), label.ToLower(), number).Build();
+
+            if (properties != null)
+            {
+                foreach (var property in properties)
+                {
+                    if (property.Key != "action" && property.Key != "label" && property.Key != "number")
+                    {
+                        eventToTrack.Add(NSObject.FromObject(property.Key), NSObject.FromObject(property.Value));
+                    }
+                }
+            }
+
             Tracker.Send(eventToTrack);
         }
 
@@ -67,8 +85,18 @@ namespace TinyInsightsLib.GoogleAnalytics
         public virtual async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
         {
             Tracker.Set(GaiConstants.ScreenName, viewName);
-           
-            Tracker.Send(DictionaryBuilder.CreateScreenView().Build());
+
+            var viewToTrack = DictionaryBuilder.CreateScreenView().Build();
+
+            if (properties != null)
+            {
+                foreach (var property in properties)
+                {
+                    viewToTrack.Add(NSObject.FromObject(property.Key), NSObject.FromObject(property.Value));
+                }
+            }
+
+            Tracker.Send(viewToTrack);
         }
     }
 }

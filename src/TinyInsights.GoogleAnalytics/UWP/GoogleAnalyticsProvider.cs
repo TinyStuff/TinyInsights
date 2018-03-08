@@ -42,6 +42,7 @@ namespace TinyInsightsLib.GoogleAnalytics
         {
             string action = string.Empty;
             string label = string.Empty;
+            int number = 0;
 
             if(properties != null && properties.ContainsKey("action"))
             {
@@ -53,7 +54,23 @@ namespace TinyInsightsLib.GoogleAnalytics
                 label = properties["label"];
             }
 
-            var eventToTrack = HitBuilder.CreateCustomEvent(eventName, action, label).Build();
+            if (properties != null && properties.ContainsKey("number"))
+            {
+                int.TryParse(properties["number"], out number);
+            }
+
+            var eventToTrack = HitBuilder.CreateCustomEvent(eventName, action, label, number).Build();
+
+            if (properties != null)
+            {
+                foreach (var property in properties)
+                {
+                    if (property.Key != "action" && property.Key != "label" && property.Key != "number")
+                    {
+                        eventToTrack.Add(property.Key, property.Value);
+                    }
+                }
+            }
 
             tracker.Send(eventToTrack);
         }
@@ -68,6 +85,14 @@ namespace TinyInsightsLib.GoogleAnalytics
             tracker.ScreenName = viewName;
 
             var viewToTrack = HitBuilder.CreateScreenView().Build();
+
+            if (properties != null)
+            {
+                foreach (var property in properties)
+                {
+                    viewToTrack.Add(property.Key, property.Value);
+                }
+            }
 
             tracker.Send(viewToTrack);
         }

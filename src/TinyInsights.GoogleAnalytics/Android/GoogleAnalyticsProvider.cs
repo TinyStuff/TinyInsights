@@ -52,6 +52,7 @@ namespace TinyInsightsLib.GoogleAnalytics
         {
             string action = string.Empty;
             string label = string.Empty;
+            int number = 0;
 
             if (properties != null && properties.ContainsKey("action"))
             {
@@ -63,12 +64,29 @@ namespace TinyInsightsLib.GoogleAnalytics
                 label = properties["label"];
             }
 
+            if (properties != null && properties.ContainsKey("number"))
+            {
+                int.TryParse(properties["number"], out number);
+            }
+
             var builder = new HitBuilders.EventBuilder();
             builder.SetCategory(eventName.ToLower());
             builder.SetAction(action.ToLower());
             builder.SetLabel(label.ToLower());
+            builder.SetValue(number);
 
             var eventToTrack = builder.Build();
+
+            if(properties != null)
+            {
+                foreach(var property in properties)
+                {
+                    if(property.Key != "action" && property.Key != "label" && property.Key != "number")
+                    {
+                        eventToTrack.Add(property.Key, property.Value);
+                    }
+                }
+            }
 
             tracker.Send(eventToTrack);
         }
@@ -81,7 +99,18 @@ namespace TinyInsightsLib.GoogleAnalytics
         public virtual async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
         {
             tracker.SetScreenName(viewName);
-            tracker.Send(new HitBuilders.ScreenViewBuilder().Build());
+
+            var viewToTrack = new HitBuilders.ScreenViewBuilder().Build();
+
+            if (properties != null)
+            {
+                foreach (var property in properties)
+                {
+                    viewToTrack.Add(property.Key, property.Value);
+                }
+            }
+
+            tracker.Send(viewToTrack);
         }
     }
 }
