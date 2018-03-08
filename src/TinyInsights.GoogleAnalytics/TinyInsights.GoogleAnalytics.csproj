@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/TinyStuff/TinyInsights</PackageProjectUrl>
     <PackageTags>xamarin googleAnalytics</PackageTags>
     <Title>TinyInsights, Google Analytics provider</Title>
-    <PackageId>TinyInsights.AppCenter</PackageId>
+    <PackageId>TinyInsights.GoogleAnalytics</PackageId>
     <PackageVersion>1.0.0</PackageVersion>
     <Authors>Daniel Hindrikes</Authors>
     <Description>TinyInsights is an abstraction for multiple analytics provicers. This is a provider for Google Analytics.</Description>
@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.2.2" />
+    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.2.2" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
