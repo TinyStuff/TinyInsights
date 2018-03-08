@@ -20,7 +20,7 @@ namespace TinyInsightsLib.AppCenter
         public bool IsTrackPageViewsEnabled { get; set; } = true;
         public bool IsTrackEventsEnabled { get; set; } = true;
 
-        public async Task TrackErrorAsync(Exception ex)
+        public virtual async Task TrackErrorAsync(Exception ex)
         {
             if(IsTrackEventsEnabled)
             {
@@ -28,12 +28,12 @@ namespace TinyInsightsLib.AppCenter
             }
         }
 
-        public async Task TrackEventAsync(string eventName)
+        public virtual async Task TrackEventAsync(string eventName)
         {
             await TrackEventAsync(eventName, null);
         }
 
-        public async Task TrackEventAsync(string eventName, Dictionary<string, string> properties)
+        public virtual async Task TrackEventAsync(string eventName, Dictionary<string, string> properties)
         {
             if (IsTrackEventsEnabled)
             {
@@ -41,12 +41,12 @@ namespace TinyInsightsLib.AppCenter
             }
         }
 
-        public async Task TrackPageViewAsync(string viewName)
+        public virtual async Task TrackPageViewAsync(string viewName)
         {
             await TrackPageViewAsync(viewName, null);
         }
 
-        public async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
+        public virtual async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
         {
             if(IsTrackPageViewsEnabled)
             {
