@@ -9,7 +9,7 @@
     <PackageTags>xamarin googleAnalytics</PackageTags>
     <Title>TinyInsights, Google Analytics provider</Title>
     <PackageId>TinyInsights.GoogleAnalytics</PackageId>
-    <Version>1.0.0</Version>
+    <PackageVersion>1.0.0</PackageVersion>
     <Authors>Daniel Hindrikes</Authors>
     <Description>TinyInsights is an abstraction for multiple analytics provicers. This is a provider for Google Analytics.</Description>
   </PropertyGroup>
