@@ -4,7 +4,7 @@
 <img src="https://io2gamelabs.visualstudio.com/_apis/public/build/definitions/be16d002-5786-41a1-bf3b-3e13d5e80aa0/8/badge" alt="build status" />
 
 ## About
-The idea behind TinyInsights is to build a cross platform library to use with your favorite Analytics provider. Right now there are a provider for App Center, but more will come. And you are of course welcome to contribute with your favorite provider.
+The idea behind TinyInsights is to build a cross platform library to use with your favorite Analytics provider. Right now there are a providers for AppCenter and Google Analytics. And you are of course welcome to contribute with your favorite provider.
 
 ## Get started
 Install the Nuget package for the provider you want to use in the platform project, in other projects use the TinyInsights package.
@@ -36,7 +36,6 @@ TinyInsights.Configure(appCenterProvider, provider 2, provider3);
 ```
 
 ### Track errors
-This is not implemented in App Center yet.
 
 ```csharp
 catch(Ecception ex)
