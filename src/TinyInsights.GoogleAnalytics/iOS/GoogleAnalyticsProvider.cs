@@ -26,15 +26,25 @@ namespace TinyInsightsLib.GoogleAnalytics
 
         public virtual async Task TrackErrorAsync(Exception ex)
         {
-            if(IsTrackErrorsEnabled)
-            {               
-                Tracker.Send(DictionaryBuilder.CreateException(ex.Message, 0).Build());
-            }
+            await TrackErrorAsync(ex, null);
         }
 
         public virtual async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties)
         {
-            // TODO: Implement
+            if (IsTrackErrorsEnabled)
+            {
+                var builder = DictionaryBuilder.CreateException(ex.Message, 0);
+                
+                if(properties != null)
+                {
+                    foreach(var property in properties)
+                    {
+                        builder.Set(property.Key, property.Value);
+                    }
+                }
+
+                Tracker.Send(builder.Build());
+            }
         }
 
         public virtual async Task TrackEventAsync(string eventName)
