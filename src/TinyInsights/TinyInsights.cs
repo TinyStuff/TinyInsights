@@ -21,15 +21,7 @@ namespace TinyInsightsLib
 
         public static async Task TrackErrorAsync(Exception ex)
         {
-            var tasks = new List<Task>();
-            
-            foreach(var provider in insightsProviders)
-            {
-                    var task = provider.TrackErrorAsync(ex);
-                    tasks.Add(task);
-            }
-
-            await Task.WhenAll(tasks);
+            await TrackErrorAsync(ex, null);
         }
 
         public static async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties)
