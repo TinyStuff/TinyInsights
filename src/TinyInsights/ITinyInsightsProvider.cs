@@ -13,6 +13,8 @@ namespace TinyInsightsLib
 
         Task TrackErrorAsync(Exception ex);
 
+        Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties);
+
         Task TrackPageViewAsync(string viewName);
         Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties);
 

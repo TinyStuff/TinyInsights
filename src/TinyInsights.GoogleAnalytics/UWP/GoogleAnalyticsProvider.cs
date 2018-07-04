@@ -33,6 +33,11 @@ namespace TinyInsightsLib.GoogleAnalytics
             }
         }
 
+        public virtual async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties)
+        {
+            // TODO: Implement
+        }
+
         public virtual async Task TrackEventAsync(string eventName)
         {
             await TrackEventAsync(eventName, null);
@@ -96,5 +101,7 @@ namespace TinyInsightsLib.GoogleAnalytics
 
             tracker.Send(viewToTrack);
         }
+
+        
     }
 }
