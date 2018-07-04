@@ -42,6 +42,16 @@ catch(Ecception ex)
 {
      await TinyInsights.TrackErrorAsync(ex);
 }
+
+//with properties
+var properties = new  Dictionarty<string, string>();
+properties.Add("MyFirstProperty", "MyFirstValue");
+properties.Add("MySecondProperty", "MySeconndValue");
+
+catch(Ecception ex)
+{
+     await TinyInsights.TrackErrorAsync(ex, properties);
+}
 ```
 
 ### Track page views
