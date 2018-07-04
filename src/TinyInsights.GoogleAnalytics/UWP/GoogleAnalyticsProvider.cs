@@ -25,11 +25,24 @@ namespace TinyInsightsLib.GoogleAnalytics
 
         public virtual async Task TrackErrorAsync(Exception ex)
         {
-            if(IsTrackErrorsEnabled)
-            {
-                var exceptionToTrack = HitBuilder.CreateException(ex.Message, false).Build();
+            await TrackErrorAsync(ex, null);
+        }
 
-                tracker.Send(exceptionToTrack);
+        public virtual async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties)
+        {
+            if (IsTrackErrorsEnabled)
+            {
+                var builder = HitBuilder.CreateException(ex.Message, false);
+
+                if(properties != null)
+                {
+                    foreach (var property in properties)
+                    {
+                        builder.Set(property.Key, property.Value);
+                    }
+                }
+
+                tracker.Send(builder.Build());
             }
         }
 
@@ -96,5 +109,7 @@ namespace TinyInsightsLib.GoogleAnalytics
 
             tracker.Send(viewToTrack);
         }
+
+        
     }
 }
