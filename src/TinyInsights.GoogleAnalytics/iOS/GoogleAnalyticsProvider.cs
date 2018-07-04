@@ -1,12 +1,9 @@
-﻿using Google.Analytics;
+﻿using Foundation;
+using Google.Analytics;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Threading.Tasks;
-using TinyInsightsLib;
-using System.Linq;
-using Foundation;
 
 namespace TinyInsightsLib.GoogleAnalytics
 {
@@ -30,9 +27,14 @@ namespace TinyInsightsLib.GoogleAnalytics
         public virtual async Task TrackErrorAsync(Exception ex)
         {
             if(IsTrackErrorsEnabled)
-            {
+            {               
                 Tracker.Send(DictionaryBuilder.CreateException(ex.Message, 0).Build());
             }
+        }
+
+        public virtual async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties)
+        {
+            // TODO: Implement
         }
 
         public virtual async Task TrackEventAsync(string eventName)

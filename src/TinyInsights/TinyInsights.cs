@@ -32,6 +32,19 @@ namespace TinyInsightsLib
             await Task.WhenAll(tasks);
         }
 
+        public static async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties)
+        {
+            var tasks = new List<Task>();
+
+            foreach (var provider in insightsProviders)
+            {
+                var task = provider.TrackErrorAsync(ex, properties);
+                tasks.Add(task);
+            }
+
+            await Task.WhenAll(tasks);
+        }
+
         public static async Task TrackPageViewAsync(string viewName)
         {
             var tasks = new List<Task>();

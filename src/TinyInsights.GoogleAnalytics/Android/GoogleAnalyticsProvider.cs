@@ -13,8 +13,7 @@ namespace TinyInsightsLib.GoogleAnalytics
     {
         private Android.Gms.Analytics.GoogleAnalytics instance;
         private Tracker tracker;
-
-
+        
         public bool IsTrackErrorsEnabled { get; set; } = true;
         public bool IsTrackPageViewsEnabled { get; set; } = true;
         public bool IsTrackEventsEnabled { get; set; } = true;
@@ -43,6 +42,11 @@ namespace TinyInsightsLib.GoogleAnalytics
             }
         }
 
+        public virtual async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties)
+        {
+            // TODO: Implement
+        }
+        
         public virtual async Task TrackEventAsync(string eventName)
         {
             await TrackEventAsync(eventName, null);
