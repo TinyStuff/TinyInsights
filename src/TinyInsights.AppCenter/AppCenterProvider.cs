@@ -21,7 +21,7 @@ namespace TinyInsightsLib.AppCenter
 
         public virtual async Task TrackErrorAsync(Exception ex)
         {
-            await this.TrackErrorAsync(ex, null);
+            await TrackErrorAsync(ex, null);
         }
 
         public virtual async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties)
