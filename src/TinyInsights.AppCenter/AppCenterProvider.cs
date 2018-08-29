@@ -15,16 +15,20 @@ namespace TinyInsightsLib.AppCenter
                                                       typeof(Analytics), typeof(Crashes));
         }
 
-
         public bool IsTrackErrorsEnabled { get; set; } = true;
         public bool IsTrackPageViewsEnabled { get; set; } = true;
         public bool IsTrackEventsEnabled { get; set; } = true;
 
         public virtual async Task TrackErrorAsync(Exception ex)
         {
-            if(IsTrackEventsEnabled)
+            await TrackErrorAsync(ex, null);
+        }
+
+        public virtual async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties)
+        {
+            if (IsTrackEventsEnabled)
             {
-                Crashes.TrackError(ex);
+                Crashes.TrackError(ex, properties);
             }
         }
 
