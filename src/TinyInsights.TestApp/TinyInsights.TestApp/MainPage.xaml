@@ -4,8 +4,9 @@
              xmlns:local="clr-namespace:TinyInsights.TestApp"
              x:Class="TinyInsights.TestApp.MainPage">
 
-	<Label Text="Welcome to Xamarin.Forms!" 
-           VerticalOptions="Center" 
-           HorizontalOptions="Center" />
+    <StackLayout>
+        <Button Text="Crash app" Clicked="Crash_Clicked" />
+        <Button Text="Throw exception" Clicked="Throw_Clicked" />
+    </StackLayout>
 
 </ContentPage>

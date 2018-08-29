@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using TinyInsightsLib.ApplicationInsights;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -28,8 +29,15 @@ namespace TinyInsights.TestApp.UWP
         /// </summary>
         public App()
         {
+            var provider = new ApplicationInsightsProvider(this, "fd632941-180d-4fb9-a57d-a51fd8547c9a");
+
+            TinyInsightsLib.TinyInsights.Configure(provider);
+
+
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
+
         }
 
         /// <summary>

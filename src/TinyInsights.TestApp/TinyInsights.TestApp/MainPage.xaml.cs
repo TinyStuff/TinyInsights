@@ -15,5 +15,22 @@ namespace TinyInsights.TestApp
 
             TinyInsightsLib.TinyInsights.TrackPageViewAsync("MainPage");
 		}
-	}
+
+        private void Crash_Clicked(object sender, EventArgs e)
+        {
+            throw new Exception("CRASH :(");
+        }
+
+        private void Throw_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                throw new NullReferenceException("This is handled");
+            }
+            catch(Exception ex)
+            {
+                TinyInsightsLib.TinyInsights.TrackErrorAsync(ex);
+            }
+        }
+    }
 }
