@@ -24,7 +24,7 @@ namespace TinyInsightsLib.AppCenter
 				typeof(Crashes)
 			};
 
-            Microsoft.AppCenter.AppCenter.Start($"ios={iOSkey};uwp={uwpKey};android={androidKey}", services);
+            Microsoft.AppCenter.AppCenter.Start($"ios={iOSkey};uwp={uwpKey};android={androidKey}", services.ToArray());
         }
 
         public bool IsTrackErrorsEnabled { get; set; } = true;
