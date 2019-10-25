@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyInsights", "TinyInsights\TinyInsights.csproj", "{90759FEA-89BF-450C-9482-F28F8B1A4C60}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyInsights.AppCenter", "TinyInsights.AppCenter\TinyInsights.AppCenter.csproj", "{6DE2817F-D4F5-4351-BD18-EAB43806DAAF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyInsights.AppCenter", "TinyInsights.AppCenter\TinyInsights.AppCenter.csproj", "{6DE2817F-D4F5-4351-BD18-EAB43806DAAF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinyInsights.GoogleAnalytics", "TinyInsights.GoogleAnalytics\TinyInsights.GoogleAnalytics.csproj", "{D1245135-EA42-4A64-861A-C35B383C6F05}"
 EndProject

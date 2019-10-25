@@ -9,10 +9,22 @@ namespace TinyInsightsLib.AppCenter
 {
     public class AppCenterProvider : ITinyInsightsProvider
     {
-        public AppCenterProvider(string iOSkey, string androidKey, string uwpKey)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="iOSkey">The AppCenter key for iOS</param>
+		/// <param name="androidKey">The AppCenter key for Android</param>
+		/// <param name="uwpKey">The AppCenter key for uwp</param>
+		/// <param name="additonalServices">Analytics and Crashes are default</param>
+		public AppCenterProvider(string iOSkey, string androidKey, string uwpKey, params Type[] additonalServices)
         {
-            Microsoft.AppCenter.AppCenter.Start($"ios={iOSkey};uwp={uwpKey};android={androidKey}",
-                                                      typeof(Analytics), typeof(Crashes));
+			var services = new List<Type>()
+			{
+				typeof(Analytics),
+				typeof(Crashes)
+			};
+
+            Microsoft.AppCenter.AppCenter.Start($"ios={iOSkey};uwp={uwpKey};android={androidKey}", services);
         }
 
         public bool IsTrackErrorsEnabled { get; set; } = true;
