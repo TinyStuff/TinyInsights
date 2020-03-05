@@ -57,5 +57,29 @@ namespace TinyInsightsLib
 
             await Task.WhenAll(tasks);
         }
+
+        public static async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success, int resultCode = 0, Exception exception = null)
+        {
+            var tasks = new List<Task>();
+
+            foreach (var provider in insightsProviders)
+            {
+                var task = provider.TrackDependencyAsync(dependencyType, dependencyName, startTime, duration, success, resultCode, exception);
+                tasks.Add(task);
+            }
+
+            await Task.WhenAll(tasks);
+        }
+
+        public static TinyDependency CreateDependencyTracker(string dependencyType, string dependencyName)
+        {
+            var dependency = new TinyDependency()
+            {
+                DependencyType = dependencyType,
+                DependencyName = dependencyName
+            };
+
+            return dependency;
+        }
     }
 }

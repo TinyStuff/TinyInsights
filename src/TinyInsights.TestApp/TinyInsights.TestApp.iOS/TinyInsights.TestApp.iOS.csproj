@@ -135,6 +135,10 @@
       <Project>{6de2817f-d4f5-4351-bd18-eab43806daaf}</Project>
       <Name>TinyInsights.AppCenter</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\TinyInsights.ApplicationInsights\TinyInsights.ApplicationInsights.csproj">
+      <Project>{5710F2DF-0F90-433D-A24B-BDAA819ABFDB}</Project>
+      <Name>TinyInsights.ApplicationInsights</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\TinyInsights.GoogleAnalytics\TinyInsights.GoogleAnalytics.csproj">
       <Project>{d1245135-ea42-4a64-861a-c35b383c6f05}</Project>
       <Name>TinyInsights.GoogleAnalytics</Name>

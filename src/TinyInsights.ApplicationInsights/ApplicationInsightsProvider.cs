@@ -1,4 +1,5 @@
 ﻿using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -86,6 +87,12 @@ namespace TinyInsightsLib.ApplicationInsights
         {
 #if __IOS__ || __ANDROID__
             var path = Path.Combine(logPath, crashLogFilename);
+            
+            if (!File.Exists(path))
+            {
+                return new List<Exception>();
+            }
+
             var json = File.ReadAllText(path);
 #elif WINDOWS_UWP
             
@@ -117,6 +124,11 @@ namespace TinyInsightsLib.ApplicationInsights
 #if __IOS__ || __ANDROID__
             var path = Path.Combine(logPath, crashLogFilename);
 
+            if(!File.Exists(path))
+            {
+                File.Create(path);
+            }
+
             System.IO.File.WriteAllText(path, json);
 #elif UWP
              var fileTask = ApplicationData.Current.LocalCacheFolder.CreateFileAsync(crashLogFilename, CreationCollisionOption.OpenIfExists).AsTask<StorageFile>();
@@ -146,9 +158,27 @@ namespace TinyInsightsLib.ApplicationInsights
             client.Flush();
         }
 
-        public async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success)
+        public async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success, int resultCode = 0, Exception exception = null)
         {
-            client.TrackDependency(dependencyType, dependencyName, null, startTime, duration, success);
+            var dependency = new DependencyTelemetry(dependencyType, dependencyName, startTime, duration, success)
+            {
+                ResultCode = resultCode.ToString()
+            };
+
+            if(exception != null)
+            {
+                var properties = new Dictionary<string, string>();
+                properties.Add("Exception message", exception.Message);
+                properties.Add("StackTrace", exception.StackTrace);
+
+                if(exception.InnerException != null)
+                {
+                    properties.Add("Inner exception message", exception.InnerException.Message);
+                    properties.Add("Inner exception stackTrace", exception.InnerException.StackTrace);
+                }
+            }
+
+            client.TrackDependency(dependency);
         }
     }
 }

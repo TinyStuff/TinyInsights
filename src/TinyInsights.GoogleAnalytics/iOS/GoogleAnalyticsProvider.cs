@@ -112,9 +112,23 @@ namespace TinyInsightsLib.GoogleAnalytics
             Tracker.Send(viewToTrack);
         }
 
-        public virtual async Task TrackDependencyAsync(string depenencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success)
+        public virtual async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success, int resultCode = 0, Exception exception = null)
         {
-            var dependencyToTrack = DictionaryBuilder.CreateTiming(depenencyType, duration.Milliseconds, dependencyName, success.ToString()).Build();
+            var dependencyToTrack = DictionaryBuilder.CreateTiming(dependencyType, duration.Milliseconds, dependencyName, success.ToString()).Build();
+
+            dependencyToTrack.Add((NSString)"ResultCode", (NSString)resultCode.ToString());
+
+            if (exception != null)
+            {
+                dependencyToTrack.Add(NSObject.FromObject("Exception message"), NSObject.FromObject(exception.Message));
+                dependencyToTrack.Add(NSObject.FromObject("StackTrace"), NSObject.FromObject(exception.StackTrace));
+
+                if (exception.InnerException != null)
+                {
+                    dependencyToTrack.Add(NSObject.FromObject("Inner exception message"), NSObject.FromObject(exception.InnerException.Message));
+                    dependencyToTrack.Add(NSObject.FromObject("Inner exception stackTrace"), NSObject.FromObject(exception.InnerException.StackTrace));
+                }
+            }
 
             Tracker.Send(dependencyToTrack);
         }

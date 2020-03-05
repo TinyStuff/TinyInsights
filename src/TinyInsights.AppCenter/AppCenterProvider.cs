@@ -32,7 +32,7 @@ namespace TinyInsightsLib.AppCenter
         public bool IsTrackEventsEnabled { get; set; } = true;
         public bool IsTrackDependencyEnabled { get; set; }
 
-        public async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success)
+        public async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success, int resultCode = 0, Exception exception = null)
         {
             if(IsTrackDependencyEnabled)
             {
@@ -44,6 +44,19 @@ namespace TinyInsightsLib.AppCenter
                 properties.Add("Duration", duration.ToString());
                 properties.Add("StartTime", startTime.ToString());
                 properties.Add("Success", success.ToString());
+                properties.Add("ResultCode", resultCode.ToString());
+
+                if (exception != null)
+                {
+                    properties.Add("Exception message", exception.Message);
+                    properties.Add("StackTrace", exception.StackTrace);
+
+                    if (exception.InnerException != null)
+                    {
+                        properties.Add("Inner exception message", exception.InnerException.Message);
+                        properties.Add("Inner exception stackTrace", exception.InnerException.StackTrace);
+                    }
+                }
 
                 Analytics.TrackEvent("Dependency", properties);
             }
