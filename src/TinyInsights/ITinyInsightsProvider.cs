@@ -10,15 +10,14 @@ namespace TinyInsightsLib
         bool IsTrackErrorsEnabled { get; set; }
         bool IsTrackPageViewsEnabled  { get; set; }
         bool IsTrackEventsEnabled  { get; set; }
+        bool IsTrackDependencyEnabled { get; set; }
 
-        Task TrackErrorAsync(Exception ex);
+        Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties = null);
 
-        Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties);
+        Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties = null);
 
-        Task TrackPageViewAsync(string viewName);
-        Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties);
+        Task TrackEventAsync(string eventName, Dictionary<string, string> properties = null);
 
-        Task TrackEventAsync(string eventName);
-        Task TrackEventAsync(string eventName, Dictionary<string, string> properties);
+        Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success);
     }
 }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>uap10.0.14393</TargetFramework>
+    <TargetFrameworks>Xamarin.iOS10;monoandroid80;uap10.0.16299</TargetFrameworks>
     
     <PackageLicenseUrl>https://github.com/TinyStuff/TinyInsights/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/TinyStuff/TinyInsights</PackageProjectUrl>

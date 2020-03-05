@@ -14,6 +14,7 @@ namespace TinyInsightsLib.GoogleAnalytics
         public bool IsTrackErrorsEnabled { get; set; } = true;
         public bool IsTrackPageViewsEnabled { get; set; } = true;
         public bool IsTrackEventsEnabled { get; set; } = true;
+        public bool IsTrackDependencyEnabled { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public GoogleAnalyticsProvider(string trackingId, bool catchUnhandledExceptions = true)
         {
@@ -109,6 +110,13 @@ namespace TinyInsightsLib.GoogleAnalytics
             }
 
             Tracker.Send(viewToTrack);
+        }
+
+        public virtual async Task TrackDependencyAsync(string depenencyType, string dependencyName, TimeSpan duration)
+        {
+            var dependencyToTrack = DictionaryBuilder.CreateTiming(depenencyType, duration.Milliseconds, dependencyName, null).Build();
+
+            Tracker.Send(dependencyToTrack);
         }
     }
 }

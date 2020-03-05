@@ -2,22 +2,46 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using Windows.Storage;
-using Windows.UI.Xaml;
 
 namespace TinyInsightsLib.ApplicationInsights
 {
     public class ApplicationInsightsProvider : ITinyInsightsProvider
     {
         private const string crashLogFilename = "crashes.tinyinsights";
+        private readonly string logPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
         private TelemetryClient client;
 
         public bool IsTrackErrorsEnabled { get; set; } = true;
         public bool IsTrackPageViewsEnabled { get; set; } = true;
         public bool IsTrackEventsEnabled { get; set; } = true;
+        public bool IsTrackDependencyEnabled { get; set; } = true;
 
+#if XAMARINIOS || MONODROID
+        public ApplicationInsightsProvider(string key)
+        {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+
+            client = new TelemetryClient();
+            client.InstrumentationKey = key;
+
+            Task.Run(SendCrashes);
+        }
+
+        private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            HandleCrash(e.Exception);
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            HandleCrash((Exception)e.ExceptionObject);
+        }
+
+#elif UAP
         public ApplicationInsightsProvider(Application app, string key)
         {
             app.UnhandledException += App_UnhandledException;
@@ -32,48 +56,37 @@ namespace TinyInsightsLib.ApplicationInsights
         {
             HandleCrash(e.Exception);
         }
+#endif
 
         private async Task SendCrashes()
         {
             var crashes = ReadCrashes();
 
-            if(crashes != null)
+            if (crashes != null)
             {
                 var properties = new Dictionary<string, string>();
                 properties.Add("IsCrash", "true");
 
-                foreach(var crash in crashes)
+                foreach (var crash in crashes)
                 {
                     await TrackErrorAsync(crash, properties);
                 }
             }
-
-            var file = await ApplicationData.Current.LocalCacheFolder.CreateFileAsync(crashLogFilename, CreationCollisionOption.OpenIfExists);
-            await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
         }
 
         private List<Exception> ReadCrashes()
         {
-            List<Exception> crashes;
+            var path = Path.Combine(logPath, crashLogFilename);
 
-            var fileTask = ApplicationData.Current.LocalCacheFolder.CreateFileAsync(crashLogFilename, CreationCollisionOption.OpenIfExists).AsTask<StorageFile>();
-            fileTask.Wait();
-            var file = fileTask.Result;
-
-            var readTask = FileIO.ReadTextAsync(file).AsTask<string>();
-            readTask.Wait();
-            var json = readTask.Result;
+            var json = File.ReadAllText(path);
 
             if (string.IsNullOrWhiteSpace(json))
             {
-                crashes = new List<Exception>();
-            }
-            else
-            {
-                crashes = JsonConvert.DeserializeObject<List<Exception>>(json);
+                return new List<Exception>();
             }
 
-            return crashes;
+            return JsonConvert.DeserializeObject<List<Exception>>(json);
+
         }
 
         private void HandleCrash(Exception ex)
@@ -84,12 +97,10 @@ namespace TinyInsightsLib.ApplicationInsights
 
             var json = JsonConvert.SerializeObject(crashes);
 
-            var fileTask = ApplicationData.Current.LocalCacheFolder.CreateFileAsync(crashLogFilename, CreationCollisionOption.OpenIfExists).AsTask<StorageFile>();
-            fileTask.Wait();
-            var file = fileTask.Result;
+            var path = Path.Combine(logPath, crashLogFilename);
 
-            var writeTask = FileIO.WriteTextAsync(file, json).AsTask();
-            writeTask.Wait();
+            System.IO.File.WriteAllText(path, json);
+
         }
 
         public async Task TrackErrorAsync(Exception ex)
@@ -123,6 +134,11 @@ namespace TinyInsightsLib.ApplicationInsights
         {
             client.TrackPageView(viewName);
             client.Flush();
+        }
+
+        public async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success)
+        {
+            client.TrackDependency(dependencyType, dependencyName, null, startTime, duration, success);
         }
     }
 }

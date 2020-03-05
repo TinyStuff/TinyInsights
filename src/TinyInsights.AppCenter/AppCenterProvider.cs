@@ -30,10 +30,23 @@ namespace TinyInsightsLib.AppCenter
         public bool IsTrackErrorsEnabled { get; set; } = true;
         public bool IsTrackPageViewsEnabled { get; set; } = true;
         public bool IsTrackEventsEnabled { get; set; } = true;
+        public bool IsTrackDependencyEnabled { get; set; }
 
-        public virtual async Task TrackErrorAsync(Exception ex)
+        public async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success)
         {
-            await TrackErrorAsync(ex, null);
+            if(IsTrackDependencyEnabled)
+            {
+
+                var properties = new Dictionary<string, string>();
+
+                properties.Add("DependencyType", dependencyType);
+                properties.Add("DependencyName", dependencyName);
+                properties.Add("Duration", duration.ToString());
+                properties.Add("StartTime", startTime.ToString());
+                properties.Add("Success", success.ToString());
+
+                Analytics.TrackEvent("Dependency", properties);
+            }
         }
 
         public virtual async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties)
@@ -44,22 +57,12 @@ namespace TinyInsightsLib.AppCenter
             }
         }
 
-        public virtual async Task TrackEventAsync(string eventName)
-        {
-            await TrackEventAsync(eventName, null);
-        }
-
         public virtual async Task TrackEventAsync(string eventName, Dictionary<string, string> properties)
         {
             if (IsTrackEventsEnabled)
             {
                 Analytics.TrackEvent(eventName, properties);
             }
-        }
-
-        public virtual async Task TrackPageViewAsync(string viewName)
-        {
-            await TrackPageViewAsync(viewName, null);
         }
 
         public virtual async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)

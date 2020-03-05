@@ -19,12 +19,7 @@ namespace TinyInsightsLib
             insightsProviders.AddRange(providers.ToList());
         }
 
-        public static async Task TrackErrorAsync(Exception ex)
-        {
-            await TrackErrorAsync(ex, null);
-        }
-
-        public static async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties)
+        public static async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties = null)
         {
             var tasks = new List<Task>();
 
@@ -37,20 +32,7 @@ namespace TinyInsightsLib
             await Task.WhenAll(tasks);
         }
 
-        public static async Task TrackPageViewAsync(string viewName)
-        {
-            var tasks = new List<Task>();
-
-            foreach (var provider in insightsProviders)
-            {
-                    var task = provider.TrackPageViewAsync(viewName);
-                    tasks.Add(task);
-            }
-
-            await Task.WhenAll(tasks);
-        }
-
-        public static async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
+        public static async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties = null)
         {
             var tasks = new List<Task>();
 
@@ -63,20 +45,7 @@ namespace TinyInsightsLib
             await Task.WhenAll(tasks);
         }
 
-        public static async Task TrackEventAsync(string eventName)
-        {
-            var tasks = new List<Task>();
-
-            foreach (var provider in insightsProviders)
-            {
-                    var task = provider.TrackEventAsync(eventName);
-                    tasks.Add(task);
-            }
-
-            await Task.WhenAll(tasks);
-        }
-
-        public static async Task TrackEventAsync(string eventName, Dictionary<string, string> properties)
+        public static async Task TrackEventAsync(string eventName, Dictionary<string, string> properties = null)
         {
             var tasks = new List<Task>();
 
