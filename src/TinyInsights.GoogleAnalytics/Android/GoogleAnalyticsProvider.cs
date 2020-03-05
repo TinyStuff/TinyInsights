@@ -17,6 +17,7 @@ namespace TinyInsightsLib.GoogleAnalytics
         public bool IsTrackErrorsEnabled { get; set; } = true;
         public bool IsTrackPageViewsEnabled { get; set; } = true;
         public bool IsTrackEventsEnabled { get; set; } = true;
+        public bool IsTrackDependencyEnabled { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public GoogleAnalyticsProvider(string trackingId, bool catchUnhandledExceptions = true)
         {
@@ -123,6 +124,33 @@ namespace TinyInsightsLib.GoogleAnalytics
             }
 
             tracker.Send(viewToTrack);
+        }
+
+        public async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success, int resultCode = 0, Exception exception = null)
+        {
+            var builder = new HitBuilders.TimingBuilder();
+            builder.SetCategory(dependencyType);
+            builder.SetVariable(dependencyName);
+            builder.SetValue(duration.Milliseconds);
+            builder.SetLabel(success.ToString());
+
+            var dependencyToTrack = builder.Build();
+
+            dependencyToTrack.Add("ResultCode", resultCode.ToString());
+
+            if (exception != null)
+            {
+                dependencyToTrack.Add("Exception message", exception.Message);
+                dependencyToTrack.Add("StackTrace", exception.StackTrace);
+
+                if (exception.InnerException != null)
+                {
+                    dependencyToTrack.Add("Inner exception message", exception.InnerException.Message);
+                    dependencyToTrack.Add("Inner exception stackTrace", exception.InnerException.StackTrace);
+                }
+            }
+
+            tracker.Send(dependencyToTrack);
         }
     }
 }

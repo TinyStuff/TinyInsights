@@ -1,23 +1,56 @@
 ﻿using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
+
+#if WINDOWS_UWP
 using Windows.Storage;
 using Windows.UI.Xaml;
+#endif
 
 namespace TinyInsightsLib.ApplicationInsights
 {
     public class ApplicationInsightsProvider : ITinyInsightsProvider
     {
         private const string crashLogFilename = "crashes.tinyinsights";
+#if __IOS__ || __ANDROID__
+        private readonly string logPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+#endif
 
         private TelemetryClient client;
 
         public bool IsTrackErrorsEnabled { get; set; } = true;
         public bool IsTrackPageViewsEnabled { get; set; } = true;
         public bool IsTrackEventsEnabled { get; set; } = true;
+        public bool IsTrackDependencyEnabled { get; set; } = true;
 
+#if __IOS__ || __ANDROID__
+        public ApplicationInsightsProvider(string key)
+        {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+
+            client = new TelemetryClient();
+            client.InstrumentationKey = key;
+
+            Task.Run(SendCrashes);
+        }
+
+        private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            HandleCrash(e.Exception);
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            HandleCrash((Exception)e.ExceptionObject);
+        }
+
+#elif WINDOWS_UWP
         public ApplicationInsightsProvider(Application app, string key)
         {
             app.UnhandledException += App_UnhandledException;
@@ -28,34 +61,41 @@ namespace TinyInsightsLib.ApplicationInsights
             Task.Run(SendCrashes);
         }
 
-        private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
         {
             HandleCrash(e.Exception);
         }
+#endif
 
         private async Task SendCrashes()
         {
             var crashes = ReadCrashes();
 
-            if(crashes != null)
+            if (crashes != null)
             {
                 var properties = new Dictionary<string, string>();
                 properties.Add("IsCrash", "true");
 
-                foreach(var crash in crashes)
+                foreach (var crash in crashes)
                 {
                     await TrackErrorAsync(crash, properties);
                 }
             }
-
-            var file = await ApplicationData.Current.LocalCacheFolder.CreateFileAsync(crashLogFilename, CreationCollisionOption.OpenIfExists);
-            await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
         }
 
         private List<Exception> ReadCrashes()
         {
-            List<Exception> crashes;
+#if __IOS__ || __ANDROID__
+            var path = Path.Combine(logPath, crashLogFilename);
+            
+            if (!File.Exists(path))
+            {
+                return new List<Exception>();
+            }
 
+            var json = File.ReadAllText(path);
+#elif WINDOWS_UWP
+            
             var fileTask = ApplicationData.Current.LocalCacheFolder.CreateFileAsync(crashLogFilename, CreationCollisionOption.OpenIfExists).AsTask<StorageFile>();
             fileTask.Wait();
             var file = fileTask.Result;
@@ -63,17 +103,14 @@ namespace TinyInsightsLib.ApplicationInsights
             var readTask = FileIO.ReadTextAsync(file).AsTask<string>();
             readTask.Wait();
             var json = readTask.Result;
-
+#endif
             if (string.IsNullOrWhiteSpace(json))
             {
-                crashes = new List<Exception>();
-            }
-            else
-            {
-                crashes = JsonConvert.DeserializeObject<List<Exception>>(json);
+                return new List<Exception>();
             }
 
-            return crashes;
+            return JsonConvert.DeserializeObject<List<Exception>>(json);
+
         }
 
         private void HandleCrash(Exception ex)
@@ -84,45 +121,64 @@ namespace TinyInsightsLib.ApplicationInsights
 
             var json = JsonConvert.SerializeObject(crashes);
 
-            var fileTask = ApplicationData.Current.LocalCacheFolder.CreateFileAsync(crashLogFilename, CreationCollisionOption.OpenIfExists).AsTask<StorageFile>();
+#if __IOS__ || __ANDROID__
+            var path = Path.Combine(logPath, crashLogFilename);
+
+            if(!File.Exists(path))
+            {
+                File.Create(path);
+            }
+
+            System.IO.File.WriteAllText(path, json);
+#elif UWP
+             var fileTask = ApplicationData.Current.LocalCacheFolder.CreateFileAsync(crashLogFilename, CreationCollisionOption.OpenIfExists).AsTask<StorageFile>();
             fileTask.Wait();
             var file = fileTask.Result;
 
             var writeTask = FileIO.WriteTextAsync(file, json).AsTask();
             writeTask.Wait();
+#endif
         }
 
-        public async Task TrackErrorAsync(Exception ex)
-        {
-            await TrackErrorAsync(ex, null);
-        }
-
-        public async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties)
+        public async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties = null)
         {
             client.TrackException(ex, properties);
             client.Flush();
         }
 
-        public async Task TrackEventAsync(string eventName)
-        {
-            await TrackEventAsync(eventName, null);
-        }
-
-        public async Task TrackEventAsync(string eventName, Dictionary<string, string> properties)
+        public async Task TrackEventAsync(string eventName, Dictionary<string, string> properties = null)
         {
             client.TrackEvent(eventName, properties);
             client.Flush();
         }
 
-        public async Task TrackPageViewAsync(string viewName)
-        {
-            await TrackPageViewAsync(viewName, null);
-        }
-
-        public async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
+        public async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties = null)
         {
             client.TrackPageView(viewName);
             client.Flush();
+        }
+
+        public async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success, int resultCode = 0, Exception exception = null)
+        {
+            var dependency = new DependencyTelemetry(dependencyType, dependencyName, startTime, duration, success)
+            {
+                ResultCode = resultCode.ToString()
+            };
+
+            if(exception != null)
+            {
+                var properties = new Dictionary<string, string>();
+                properties.Add("Exception message", exception.Message);
+                properties.Add("StackTrace", exception.StackTrace);
+
+                if(exception.InnerException != null)
+                {
+                    properties.Add("Inner exception message", exception.InnerException.Message);
+                    properties.Add("Inner exception stackTrace", exception.InnerException.StackTrace);
+                }
+            }
+
+            client.TrackDependency(dependency);
         }
     }
 }

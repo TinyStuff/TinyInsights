@@ -7,6 +7,9 @@
     <StackLayout>
         <Button Text="Crash app" Clicked="Crash_Clicked" />
         <Button Text="Throw exception" Clicked="Throw_Clicked" />
+        <Button Text="Send page view" Clicked="PageView_Clicked" />
+        <Button Text="Send dependency" Clicked="Dependency_Clicked" />
+        <Button Text="Send failed dependency" Clicked="DependencyFail_Clicked" />
     </StackLayout>
 
 </ContentPage>

@@ -25,9 +25,6 @@
     <EmbeddedResource Remove="iOS\**" Condition=" '$(TargetFramework)' != 'Xamarin.iOS10' " />  
     <EmbeddedResource Remove="UWP\**" Condition=" '$(TargetFramework)' != 'uap10.0.16299' " />
     
-    <None Remove="Android\**" Condition=" '$(TargetFramework)' != 'monoandroid80' " />
-    <None Remove="iOS\**" Condition=" '$(TargetFramework)' != 'Xamarin.iOS10' " />    
-    <None Remove="UWP\**" Condition=" '$(TargetFramework)' != 'uap10.0.16299' " />
   </ItemGroup>
 
   <ItemGroup>
