@@ -126,12 +126,13 @@ namespace TinyInsightsLib.GoogleAnalytics
             tracker.Send(viewToTrack);
         }
 
-        public async Task TrackDependencyAsync(string depenencyType, string dependencyName, TimeSpan duration)
+        public async Task TrackDependencyAsync(string depenencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success)
         {
             var builder = new HitBuilders.TimingBuilder();
             builder.SetCategory(depenencyType);
             builder.SetVariable(dependencyName);
             builder.SetValue(duration.Milliseconds);
+            builder.SetLabel(success.ToString());
 
             var dependencyToTrack = builder.Build();
 
