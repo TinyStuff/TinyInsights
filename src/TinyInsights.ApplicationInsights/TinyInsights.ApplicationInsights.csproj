@@ -13,6 +13,7 @@
     <Description>TinyInsights is an abstraction for multiple analytics providers. This is a provider for Azure Application Insights.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.1</Version>
+    <RootNamespace>TinyInsightsLib.ApplicationInsights</RootNamespace>
   </PropertyGroup>
 
   

@@ -11,6 +11,7 @@
     <Authors>Daniel Hindrikes</Authors>
     <Description>TinyInsights is an abstraction for multiple analytics provicers. This is a provider fopr Azure App Center.</Description>
     <PackOnBuild>true</PackOnBuild>
+    <RootNamespace>TinyInsightsLib.AppCenter</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
