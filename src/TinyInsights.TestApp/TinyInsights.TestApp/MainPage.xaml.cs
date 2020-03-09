@@ -12,7 +12,7 @@ namespace TinyInsights.TestApp
 		public MainPage()
 		{
 			InitializeComponent();
-
+            
             TinyInsightsLib.TinyInsights.TrackPageViewAsync("MainPage");
 		}
 

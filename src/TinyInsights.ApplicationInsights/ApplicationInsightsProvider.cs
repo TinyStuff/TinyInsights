@@ -1,5 +1,6 @@
 ﻿using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -34,8 +35,9 @@ namespace TinyInsightsLib.ApplicationInsights
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
-            client = new TelemetryClient();
-            client.InstrumentationKey = key;
+            var configuration = new TelemetryConfiguration(key);
+
+            client = new TelemetryClient(configuration);
 
             Task.Run(SendCrashes);
         }
