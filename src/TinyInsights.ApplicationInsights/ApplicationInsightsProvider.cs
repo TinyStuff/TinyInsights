@@ -4,8 +4,10 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 
 #if WINDOWS_UWP
 using Windows.Storage;
@@ -37,7 +39,19 @@ namespace TinyInsightsLib.ApplicationInsights
 
             var configuration = new TelemetryConfiguration(key);
 
-            client = new TelemetryClient(configuration);
+            try
+            {
+                client = new TelemetryClient(configuration);
+                client.Context.Device.OperatingSystem = DeviceInfo.Platform.ToString();
+                client.Context.Device.Model = DeviceInfo.Model;
+                client.Context.GlobalProperties.Add("Language", CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+                client.Context.GlobalProperties.Add("Manufacturer", DeviceInfo.Manufacturer);
+                client.Context.GlobalProperties.Add("AppVersion", AppInfo.VersionString);
+                client.Context.GlobalProperties.Add("AppBuildNumber", AppInfo.BuildString);
+            }
+            catch (Exception)
+            {
+            }
 
             Task.Run(SendCrashes);
         }
