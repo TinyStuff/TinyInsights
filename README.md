@@ -4,7 +4,7 @@
 <img src="https://io2gamelabs.visualstudio.com/_apis/public/build/definitions/be16d002-5786-41a1-bf3b-3e13d5e80aa0/8/badge" alt="build status" />
 
 ## About
-The idea behind TinyInsights is to build a cross platform library to use with your favorite Analytics provider. Right now there are a providers for AppCenter and Google Analytics. And you are of course welcome to contribute with your favorite provider.
+The idea behind TinyInsights is to build a cross platform library to use with your favorite Analytics provider. Right now there are a providers for AppCenter, Application Insights and Google Analytics. And you are of course welcome to contribute with your favorite provider.
 
 ## Release notes
 1.1 - Introducing an Application Insigts provider and a new method for tracking dependencies. Read more in this blog post, https://danielhindrikes.se/index.php/2020/03/10/application-insights-for-xamarin-and-uwp-apps-with-tinyinsights/
