@@ -18,9 +18,11 @@ namespace TinyInsightsLib.ApplicationInsights
 {
     public class ApplicationInsightsProvider : ITinyInsightsProvider
     {
+        public const string userIdKey = nameof(userIdKey);
+
         private const string crashLogFilename = "crashes.tinyinsights";
 #if __IOS__ || __ANDROID__
-        private readonly string logPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        private readonly string logPath = FileSystem.CacheDirectory;
 
 #endif
 
@@ -44,6 +46,21 @@ namespace TinyInsightsLib.ApplicationInsights
                 client = new TelemetryClient(configuration);
                 client.Context.Device.OperatingSystem = DeviceInfo.Platform.ToString();
                 client.Context.Device.Model = DeviceInfo.Model;
+                
+                if(Preferences.ContainsKey(userIdKey))
+                {
+                    var userId = Preferences.Get(userIdKey, string.Empty);
+
+                    client.Context.User.Id = userId;
+                }
+                else
+                {
+                    var userId = Guid.NewGuid().ToString();
+                    Preferences.Set(userIdKey, userId);
+
+                    client.Context.User.Id = userId;
+                }
+
                 client.Context.GlobalProperties.Add("Language", CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
                 client.Context.GlobalProperties.Add("Manufacturer", DeviceInfo.Manufacturer);
                 client.Context.GlobalProperties.Add("AppVersion", AppInfo.VersionString);
