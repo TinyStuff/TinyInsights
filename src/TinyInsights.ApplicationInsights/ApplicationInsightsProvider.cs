@@ -55,7 +55,10 @@ namespace TinyInsightsLib.ApplicationInsights
                 }
                 else
                 {
-                    Preferences.Set(userIdKey, Guid.NewGuid().ToString());
+                    var userId = Guid.NewGuid().ToString();
+                    Preferences.Set(userIdKey, userId);
+
+                    client.Context.User.Id = userId;
                 }
 
                 client.Context.GlobalProperties.Add("Language", CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
