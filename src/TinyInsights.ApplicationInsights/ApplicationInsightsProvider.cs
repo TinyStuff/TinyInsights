@@ -18,9 +18,11 @@ namespace TinyInsightsLib.ApplicationInsights
 {
     public class ApplicationInsightsProvider : ITinyInsightsProvider
     {
+        public const string userIdKey = nameof(userIdKey);
+
         private const string crashLogFilename = "crashes.tinyinsights";
 #if __IOS__ || __ANDROID__
-        private readonly string logPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        private readonly string logPath = FileSystem.CacheDirectory;
 
 #endif
 
@@ -42,12 +44,8 @@ namespace TinyInsightsLib.ApplicationInsights
             try
             {
                 client = new TelemetryClient(configuration);
-                client.Context.Device.OperatingSystem = DeviceInfo.Platform.ToString();
-                client.Context.Device.Model = DeviceInfo.Model;
-                client.Context.GlobalProperties.Add("Language", CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
-                client.Context.GlobalProperties.Add("Manufacturer", DeviceInfo.Manufacturer);
-                client.Context.GlobalProperties.Add("AppVersion", AppInfo.VersionString);
-                client.Context.GlobalProperties.Add("AppBuildNumber", AppInfo.BuildString);
+
+                AddMetaData();
             }
             catch (Exception)
             {
@@ -74,6 +72,8 @@ namespace TinyInsightsLib.ApplicationInsights
             client = new TelemetryClient();
             client.InstrumentationKey = key;
 
+            AddMetaData();
+
             Task.Run(SendCrashes);
         }
 
@@ -82,6 +82,36 @@ namespace TinyInsightsLib.ApplicationInsights
             HandleCrash(e.Exception);
         }
 #endif
+
+        private void AddMetaData()
+        {
+            client.Context.Device.OperatingSystem = DeviceInfo.Platform.ToString();
+            client.Context.Device.Model = DeviceInfo.Model;
+            client.Context.Device.Type = DeviceInfo.Idiom.ToString();
+
+            //Role name will show device name if we don't set it to empty and we want it to be so anonymous as possible.
+            client.Context.Cloud.RoleName = string.Empty;
+            client.Context.Cloud.RoleInstance = string.Empty;
+
+            if (Preferences.ContainsKey(userIdKey))
+            {
+                var userId = Preferences.Get(userIdKey, string.Empty);
+
+                client.Context.User.Id = userId;
+            }
+            else
+            {
+                var userId = Guid.NewGuid().ToString();
+                Preferences.Set(userIdKey, userId);
+
+                client.Context.User.Id = userId;
+            }
+
+            client.Context.GlobalProperties.Add("Language", CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+            client.Context.GlobalProperties.Add("Manufacturer", DeviceInfo.Manufacturer);
+            client.Context.GlobalProperties.Add("AppVersion", AppInfo.VersionString);
+            client.Context.GlobalProperties.Add("AppBuildNumber", AppInfo.BuildString);
+        }
 
         private async Task SendCrashes()
         {
@@ -181,13 +211,13 @@ namespace TinyInsightsLib.ApplicationInsights
                 ResultCode = resultCode.ToString()
             };
 
-            if(exception != null)
+            if (exception != null)
             {
                 var properties = new Dictionary<string, string>();
                 properties.Add("Exception message", exception.Message);
                 properties.Add("StackTrace", exception.StackTrace);
 
-                if(exception.InnerException != null)
+                if (exception.InnerException != null)
                 {
                     properties.Add("Inner exception message", exception.InnerException.Message);
                     properties.Add("Inner exception stackTrace", exception.InnerException.StackTrace);
