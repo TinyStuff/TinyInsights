@@ -1,0 +1,56 @@
+﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
+
+  <PropertyGroup>
+    <TargetFrameworks>MonoAndroid90;Xamarin.iOS10;</TargetFrameworks>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+
+
+    <PackageLicenseUrl>https://github.com/TinyStuff/TinyInsights/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/TinyStuff/TinyInsights</PackageProjectUrl>
+    <PackageTags>xamarin firebase</PackageTags>
+    <Title>TinyInsights, Firebase provider</Title>
+    <PackageId>TinyInsights.Firebase</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Authors>Daniel Hindrikes</Authors>
+    <Description>TinyInsights is an abstraction for multiple analytics providers. This is a provider for Firebase.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.1</Version>
+    <RootNamespace>TinyInsightsLib.Firebase</RootNamespace>
+    <RepositoryUrl>https://github.com/TinyStuff/TinyInsights</RepositoryUrl>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MSBuild.Sdk.Extras" Version="2.0.54" PrivateAssets="All" />
+    
+    
+    
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
+    <Compile Include="**\*.ios.cs" />
+    <Compile Include="**\*.ios.*.cs" />
+    <PackageReference Include="Xamarin.Firebase.iOS.Analytics" Version="6.4.1" />
+    <PackageReference Include="Xamarin.Firebase.iOS.Crashlytics" Version="3.14.0.3" />
+  </ItemGroup>
+  
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+    <Compile Include="**\*.android.cs" />
+    <Compile Include="**\*.android.*.cs" />
+    <PackageReference Include="Xamarin.Firebase.Analytics" Version="71.1630.1" />
+    <PackageReference Include="Xamarin.Android.Crashlytics" Version="2.9.4.4" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
+
+  <ItemGroup>
+    <None Remove="Extensions.android.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TinyInsights\TinyInsights.csproj" />
+  </ItemGroup>
+</Project>
