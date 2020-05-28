@@ -9,7 +9,7 @@ namespace TinyInsightsLib.GoogleAnalytics
 {
     public class GoogleAnalyticsProvider : ITinyInsightsProvider
     {
-        private ITracker Tracker;
+        protected ITracker Tracker { get; private set; }
 
         public bool IsTrackErrorsEnabled { get; set; } = true;
         public bool IsTrackPageViewsEnabled { get; set; } = true;

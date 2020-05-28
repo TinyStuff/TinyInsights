@@ -12,7 +12,7 @@ namespace TinyInsightsLib.GoogleAnalytics
     public class GoogleAnalyticsProvider : ITinyInsightsProvider
     {
         private Android.Gms.Analytics.GoogleAnalytics instance;
-        private Tracker tracker;
+        protected Tracker Tracker { get; private set; }
         
         public bool IsTrackErrorsEnabled { get; set; } = true;
         public bool IsTrackPageViewsEnabled { get; set; } = true;
@@ -23,10 +23,10 @@ namespace TinyInsightsLib.GoogleAnalytics
         {
             instance = Android.Gms.Analytics.GoogleAnalytics.GetInstance(Android.App.Application.Context);
 
-            tracker = instance.NewTracker(trackingId);
-            tracker.EnableExceptionReporting(catchUnhandledExceptions);
-            tracker.EnableAutoActivityTracking(false);
-            tracker.SetLanguage(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+            Tracker = instance.NewTracker(trackingId);
+            Tracker.EnableExceptionReporting(catchUnhandledExceptions);
+            Tracker.EnableAutoActivityTracking(false);
+            Tracker.SetLanguage(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
         }
 
         public virtual async Task TrackErrorAsync(Exception ex)
@@ -52,7 +52,7 @@ namespace TinyInsightsLib.GoogleAnalytics
 
                 var exceptionToTrack = builder.Build();
 
-                tracker.Send(exceptionToTrack);
+                Tracker.Send(exceptionToTrack);
             }
         }
         
@@ -101,7 +101,7 @@ namespace TinyInsightsLib.GoogleAnalytics
                 }
             }
 
-            tracker.Send(eventToTrack);
+            Tracker.Send(eventToTrack);
         }
 
         public virtual async Task TrackPageViewAsync(string viewName)
@@ -111,7 +111,7 @@ namespace TinyInsightsLib.GoogleAnalytics
 
         public virtual async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
         {
-            tracker.SetScreenName(viewName);
+            Tracker.SetScreenName(viewName);
 
             var viewToTrack = new HitBuilders.ScreenViewBuilder().Build();
 
@@ -123,7 +123,7 @@ namespace TinyInsightsLib.GoogleAnalytics
                 }
             }
 
-            tracker.Send(viewToTrack);
+            Tracker.Send(viewToTrack);
         }
 
         public async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success, int resultCode = 0, Exception exception = null)
@@ -150,7 +150,7 @@ namespace TinyInsightsLib.GoogleAnalytics
                 }
             }
 
-            tracker.Send(dependencyToTrack);
+            Tracker.Send(dependencyToTrack);
         }
     }
 }

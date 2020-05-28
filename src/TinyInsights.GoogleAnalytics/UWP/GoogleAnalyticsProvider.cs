@@ -12,7 +12,7 @@ namespace TinyInsightsLib.GoogleAnalytics
 {
     public class GoogleAnalyticsProvider : ITinyInsightsProvider
     {
-        private Tracker tracker;
+        protected Tracker Tracker { get; private set; }
         public bool IsTrackErrorsEnabled { get; set; } = true;
         public bool IsTrackPageViewsEnabled { get; set; } = true;
         public bool IsTrackEventsEnabled { get; set; } = true;
@@ -20,7 +20,7 @@ namespace TinyInsightsLib.GoogleAnalytics
 
         public GoogleAnalyticsProvider(string trackingId, bool catchUnhandledExceptions = true)
         {
-            tracker = AnalyticsManager.Current.CreateTracker(trackingId);
+            Tracker = AnalyticsManager.Current.CreateTracker(trackingId);
             AnalyticsManager.Current.ReportUncaughtExceptions = catchUnhandledExceptions;
         }
 
@@ -43,7 +43,7 @@ namespace TinyInsightsLib.GoogleAnalytics
                     }
                 }
 
-                tracker.Send(builder.Build());
+                Tracker.Send(builder.Build());
             }
         }
 
@@ -86,7 +86,7 @@ namespace TinyInsightsLib.GoogleAnalytics
                 }
             }
 
-            tracker.Send(eventToTrack);
+            Tracker.Send(eventToTrack);
         }
 
         public virtual async Task TrackPageViewAsync(string viewName)
@@ -96,7 +96,7 @@ namespace TinyInsightsLib.GoogleAnalytics
 
         public virtual async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
         {
-            tracker.ScreenName = viewName;
+            Tracker.ScreenName = viewName;
 
             var viewToTrack = HitBuilder.CreateScreenView().Build();
 
@@ -108,7 +108,7 @@ namespace TinyInsightsLib.GoogleAnalytics
                 }
             }
 
-            tracker.Send(viewToTrack);
+            Tracker.Send(viewToTrack);
         }
 
         public async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success, int resultCode = 0, Exception exception = null)
@@ -132,7 +132,7 @@ namespace TinyInsightsLib.GoogleAnalytics
                 }
             }
 
-            tracker.Send(dependencyToTrack);
+            Tracker.Send(dependencyToTrack);
         }
 
 
