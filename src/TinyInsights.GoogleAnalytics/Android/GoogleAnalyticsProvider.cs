@@ -17,7 +17,7 @@ namespace TinyInsightsLib.GoogleAnalytics
         public bool IsTrackErrorsEnabled { get; set; } = true;
         public bool IsTrackPageViewsEnabled { get; set; } = true;
         public bool IsTrackEventsEnabled { get; set; } = true;
-        public bool IsTrackDependencyEnabled { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool IsTrackDependencyEnabled { get; set; } = true;
 
         public GoogleAnalyticsProvider(string trackingId, bool catchUnhandledExceptions = true)
         {
