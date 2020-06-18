@@ -155,7 +155,7 @@ namespace TinyInsightsLib.ApplicationInsights
                 return new List<Exception>();
             }
 
-            return JsonConvert.DeserializeObject<List<Exception>>(json);
+            return JsonConvert.DeserializeObject<List<Exception>>(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
         }
 
@@ -165,7 +165,7 @@ namespace TinyInsightsLib.ApplicationInsights
 
             crashes.Add(ex);
 
-            var json = JsonConvert.SerializeObject(crashes);
+            var json = JsonConvert.SerializeObject(crashes, new JsonSerializerSettings{ TypeNameHandling = TypeNameHandling.All});
 
 #if __IOS__ || __ANDROID__
             var path = Path.Combine(logPath, crashLogFilename);
