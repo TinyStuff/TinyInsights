@@ -115,31 +115,39 @@ namespace TinyInsightsLib.ApplicationInsights
 
         private async Task SendCrashes()
         {
-            var crashes = ReadCrashes();
-
-            if (crashes != null)
+            try
             {
-                var properties = new Dictionary<string, string>();
-                properties.Add("IsCrash", "true");
+                var crashes = ReadCrashes();
 
-                foreach (var crash in crashes)
+                if (crashes != null)
                 {
-                    await TrackErrorAsync(crash, properties);
+                    var properties = new Dictionary<string, string>();
+                    properties.Add("IsCrash", "true");
+
+                    foreach (var crash in crashes)
+                    {
+                        await TrackErrorAsync(crash, properties);
+                    }
                 }
+            }
+            catch (Exception)
+            {
             }
         }
 
         private List<Exception> ReadCrashes()
         {
-#if __IOS__ || __ANDROID__
-            var path = Path.Combine(logPath, crashLogFilename);
-            
-            if (!File.Exists(path))
+            try
             {
-                return new List<Exception>();
-            }
+#if __IOS__ || __ANDROID__
+                var path = Path.Combine(logPath, crashLogFilename);
 
-            var json = File.ReadAllText(path);
+                if (!File.Exists(path))
+                {
+                    return new List<Exception>();
+                }
+
+                var json = File.ReadAllText(path);
 #elif WINDOWS_UWP
             
             var fileTask = ApplicationData.Current.LocalCacheFolder.CreateFileAsync(crashLogFilename, CreationCollisionOption.OpenIfExists).AsTask<StorageFile>();
@@ -150,32 +158,40 @@ namespace TinyInsightsLib.ApplicationInsights
             readTask.Wait();
             var json = readTask.Result;
 #endif
-            if (string.IsNullOrWhiteSpace(json))
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    return new List<Exception>();
+                }
+
+                return JsonConvert.DeserializeObject<List<Exception>>(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+
+            }
+            catch (Exception)
             {
-                return new List<Exception>();
             }
 
-            return JsonConvert.DeserializeObject<List<Exception>>(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-
+            return new List<Exception>();
         }
 
         private void HandleCrash(Exception ex)
         {
-            var crashes = ReadCrashes();
+            try
+            {
+                var crashes = ReadCrashes();
 
-            crashes.Add(ex);
+                crashes.Add(ex);
 
-            var json = JsonConvert.SerializeObject(crashes, new JsonSerializerSettings{ TypeNameHandling = TypeNameHandling.All});
+                var json = JsonConvert.SerializeObject(crashes, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
 #if __IOS__ || __ANDROID__
-            var path = Path.Combine(logPath, crashLogFilename);
+                var path = Path.Combine(logPath, crashLogFilename);
 
-            if(!File.Exists(path))
-            {
-                File.Create(path);
-            }
+                if (!File.Exists(path))
+                {
+                    File.Create(path);
+                }
 
-            System.IO.File.WriteAllText(path, json);
+                System.IO.File.WriteAllText(path, json);
 #elif UWP
              var fileTask = ApplicationData.Current.LocalCacheFolder.CreateFileAsync(crashLogFilename, CreationCollisionOption.OpenIfExists).AsTask<StorageFile>();
             fileTask.Wait();
@@ -184,47 +200,75 @@ namespace TinyInsightsLib.ApplicationInsights
             var writeTask = FileIO.WriteTextAsync(file, json).AsTask();
             writeTask.Wait();
 #endif
+            }
+            catch (Exception)
+            {
+            }
         }
 
         public async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties = null)
         {
-            client.TrackException(ex, properties);
-            client.Flush();
+            try
+            {
+                client.TrackException(ex, properties);
+                client.Flush();
+            }
+            catch (Exception)
+            {
+            }
         }
 
         public async Task TrackEventAsync(string eventName, Dictionary<string, string> properties = null)
         {
-            client.TrackEvent(eventName, properties);
-            client.Flush();
+            try
+            {
+                client.TrackEvent(eventName, properties);
+                client.Flush();
+            }
+            catch (Exception)
+            {
+            }
         }
 
         public async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties = null)
         {
-            client.TrackPageView(viewName);
-            client.Flush();
+            try
+            {
+                client.TrackPageView(viewName);
+                client.Flush();
+            }
+            catch (Exception)
+            {
+            }
         }
 
         public async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success, int resultCode = 0, Exception exception = null)
         {
-            var dependency = new DependencyTelemetry(dependencyType, dependencyName, startTime, duration, success)
+            try
             {
-                ResultCode = resultCode.ToString()
-            };
-
-            if (exception != null)
-            {
-                var properties = new Dictionary<string, string>();
-                properties.Add("Exception message", exception.Message);
-                properties.Add("StackTrace", exception.StackTrace);
-
-                if (exception.InnerException != null)
+                var dependency = new DependencyTelemetry(dependencyType, dependencyName, startTime, duration, success)
                 {
-                    properties.Add("Inner exception message", exception.InnerException.Message);
-                    properties.Add("Inner exception stackTrace", exception.InnerException.StackTrace);
-                }
-            }
+                    ResultCode = resultCode.ToString()
+                };
 
-            client.TrackDependency(dependency);
+                if (exception != null)
+                {
+                    var properties = new Dictionary<string, string>();
+                    properties.Add("Exception message", exception.Message);
+                    properties.Add("StackTrace", exception.StackTrace);
+
+                    if (exception.InnerException != null)
+                    {
+                        properties.Add("Inner exception message", exception.InnerException.Message);
+                        properties.Add("Inner exception stackTrace", exception.InnerException.StackTrace);
+                    }
+                }
+
+                client.TrackDependency(dependency);
+            }
+            catch (Exception)
+            {
+            }
         }
     }
 }
