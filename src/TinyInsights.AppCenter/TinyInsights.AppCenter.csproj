@@ -12,7 +12,15 @@
     <Description>TinyInsights is an abstraction for multiple analytics provicers. This is a provider fopr Azure App Center.</Description>
     <PackOnBuild>true</PackOnBuild>
     <RootNamespace>TinyInsightsLib.AppCenter</RootNamespace>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <ProjectReference Include="..\TinyInsights\TinyInsights.csproj" />
