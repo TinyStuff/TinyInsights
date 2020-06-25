@@ -11,6 +11,14 @@
     <PackageVersion>1.0.0</PackageVersion>
     <Description>TinyInsights is an abstraction for multiple analytics provicers. </Description>
     <RootNamespace>TinyInsightsLib</RootNamespace>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
 
 </Project>
