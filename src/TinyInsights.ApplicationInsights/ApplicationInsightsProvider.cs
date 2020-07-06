@@ -225,8 +225,9 @@ namespace TinyInsightsLib.ApplicationInsights
                 client.TrackEvent(eventName, properties);
                 client.Flush();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _ = TinyInsights.TrackErrorAsync(ex);
             }
         }
 
@@ -237,8 +238,9 @@ namespace TinyInsightsLib.ApplicationInsights
                 client.TrackPageView(viewName);
                 client.Flush();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _ = TinyInsights.TrackErrorAsync(ex);
             }
         }
 
@@ -266,8 +268,9 @@ namespace TinyInsightsLib.ApplicationInsights
 
                 client.TrackDependency(dependency);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _ = TinyInsights.TrackErrorAsync(ex);
             }
         }
     }

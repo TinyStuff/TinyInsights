@@ -36,23 +36,29 @@ namespace TinyInsightsLib.GoogleAnalytics
 
         public virtual async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties)
         {
-            if (IsTrackErrorsEnabled)
+            try
             {
-                var builder = new HitBuilders.ExceptionBuilder();
-                builder.SetDescription(ex.Message);
-                builder.SetFatal(false);
-
-                if(properties != null)
+                if (IsTrackErrorsEnabled)
                 {
-                    foreach(var property in properties)
+                    var builder = new HitBuilders.ExceptionBuilder();
+                    builder.SetDescription(ex.Message);
+                    builder.SetFatal(false);
+
+                    if (properties != null)
                     {
-                        builder.Set(property.Key, property.Value);
+                        foreach (var property in properties)
+                        {
+                            builder.Set(property.Key, property.Value);
+                        }
                     }
+
+                    var exceptionToTrack = builder.Build();
+
+                    Tracker.Send(exceptionToTrack);
                 }
-
-                var exceptionToTrack = builder.Build();
-
-                Tracker.Send(exceptionToTrack);
+            }
+            catch (Exception)
+            {
             }
         }
         
@@ -63,45 +69,52 @@ namespace TinyInsightsLib.GoogleAnalytics
 
         public virtual async Task TrackEventAsync(string eventName, Dictionary<string, string> properties)
         {
-            string action = string.Empty;
-            string label = string.Empty;
-            int number = 0;
-
-            if (properties != null && properties.ContainsKey("action"))
+            try
             {
-                action = properties["action"];
-            }
+                string action = string.Empty;
+                string label = string.Empty;
+                int number = 0;
 
-            if (properties != null && properties.ContainsKey("label"))
-            {
-                label = properties["label"];
-            }
-
-            if (properties != null && properties.ContainsKey("number"))
-            {
-                int.TryParse(properties["number"], out number);
-            }
-
-            var builder = new HitBuilders.EventBuilder();
-            builder.SetCategory(eventName.ToLower());
-            builder.SetAction(action.ToLower());
-            builder.SetLabel(label.ToLower());
-            builder.SetValue(number);
-
-            var eventToTrack = builder.Build();
-
-            if(properties != null)
-            {
-                foreach(var property in properties)
+                if (properties != null && properties.ContainsKey("action"))
                 {
-                    if(property.Key != "action" && property.Key != "label" && property.Key != "number")
+                    action = properties["action"];
+                }
+
+                if (properties != null && properties.ContainsKey("label"))
+                {
+                    label = properties["label"];
+                }
+
+                if (properties != null && properties.ContainsKey("number"))
+                {
+                    int.TryParse(properties["number"], out number);
+                }
+
+                var builder = new HitBuilders.EventBuilder();
+                builder.SetCategory(eventName.ToLower());
+                builder.SetAction(action.ToLower());
+                builder.SetLabel(label.ToLower());
+                builder.SetValue(number);
+
+                var eventToTrack = builder.Build();
+
+                if (properties != null)
+                {
+                    foreach (var property in properties)
                     {
-                        eventToTrack.Add(property.Key, property.Value);
+                        if (property.Key != "action" && property.Key != "label" && property.Key != "number")
+                        {
+                            eventToTrack.Add(property.Key, property.Value);
+                        }
                     }
                 }
-            }
 
-            Tracker.Send(eventToTrack);
+                Tracker.Send(eventToTrack);
+            }
+            catch (Exception ex)
+            {
+                _ = TinyInsights.TrackErrorAsync(ex);
+            }
         }
 
         public virtual async Task TrackPageViewAsync(string viewName)
@@ -111,46 +124,60 @@ namespace TinyInsightsLib.GoogleAnalytics
 
         public virtual async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
         {
-            Tracker.SetScreenName(viewName);
-
-            var viewToTrack = new HitBuilders.ScreenViewBuilder().Build();
-
-            if (properties != null)
+            try
             {
-                foreach (var property in properties)
-                {
-                    viewToTrack.Add(property.Key, property.Value);
-                }
-            }
+                Tracker.SetScreenName(viewName);
 
-            Tracker.Send(viewToTrack);
+                var viewToTrack = new HitBuilders.ScreenViewBuilder().Build();
+
+                if (properties != null)
+                {
+                    foreach (var property in properties)
+                    {
+                        viewToTrack.Add(property.Key, property.Value);
+                    }
+                }
+
+                Tracker.Send(viewToTrack);
+            }
+            catch (Exception ex)
+            {
+                _ = TinyInsights.TrackErrorAsync(ex);
+            }
         }
 
         public async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success, int resultCode = 0, Exception exception = null)
         {
-            var builder = new HitBuilders.TimingBuilder();
-            builder.SetCategory(dependencyType);
-            builder.SetVariable(dependencyName);
-            builder.SetValue(duration.Milliseconds);
-            builder.SetLabel(success.ToString());
-
-            var dependencyToTrack = builder.Build();
-
-            dependencyToTrack.Add("ResultCode", resultCode.ToString());
-
-            if (exception != null)
+            try
             {
-                dependencyToTrack.Add("Exception message", exception.Message);
-                dependencyToTrack.Add("StackTrace", exception.StackTrace);
+                var builder = new HitBuilders.TimingBuilder();
+                builder.SetCategory(dependencyType);
+                builder.SetVariable(dependencyName);
+                builder.SetValue(duration.Milliseconds);
+                builder.SetLabel(success.ToString());
 
-                if (exception.InnerException != null)
+                var dependencyToTrack = builder.Build();
+
+                dependencyToTrack.Add("ResultCode", resultCode.ToString());
+
+                if (exception != null)
                 {
-                    dependencyToTrack.Add("Inner exception message", exception.InnerException.Message);
-                    dependencyToTrack.Add("Inner exception stackTrace", exception.InnerException.StackTrace);
-                }
-            }
+                    dependencyToTrack.Add("Exception message", exception.Message);
+                    dependencyToTrack.Add("StackTrace", exception.StackTrace);
 
-            Tracker.Send(dependencyToTrack);
+                    if (exception.InnerException != null)
+                    {
+                        dependencyToTrack.Add("Inner exception message", exception.InnerException.Message);
+                        dependencyToTrack.Add("Inner exception stackTrace", exception.InnerException.StackTrace);
+                    }
+                }
+
+                Tracker.Send(dependencyToTrack);
+            }
+            catch (Exception ex)
+            {
+                _ = TinyInsights.TrackErrorAsync(ex);
+            }
         }
     }
 }
