@@ -22,7 +22,7 @@ For Microsoft AppCenter install the package TinyInsights.AppCenter.
 For Azure ApplicationInsights install the package TinyInsights.ApplicationInsights.
 
 ```
-Ìnstall-Package TinyInsights.AppCenter
+Ìnstall-Package TinyInsights.ApplicationInsights
 ```
 
 If you have more projects in yout solution and want to use TinyInsights in them, you can install just the TinyInsights package. The "provider package" is just needed in the procject handling the configuration.
