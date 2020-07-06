@@ -32,19 +32,25 @@ namespace TinyInsightsLib.GoogleAnalytics
 
         public virtual async Task TrackErrorAsync(Exception ex, Dictionary<string, string> properties)
         {
-            if (IsTrackErrorsEnabled)
+            try
             {
-                var builder = DictionaryBuilder.CreateException(ex.Message, 0);
-                
-                if(properties != null)
+                if (IsTrackErrorsEnabled)
                 {
-                    foreach(var property in properties)
-                    {
-                        builder.Set(property.Key, property.Value);
-                    }
-                }
+                    var builder = DictionaryBuilder.CreateException(ex.Message, 0);
 
-                Tracker.Send(builder.Build());
+                    if (properties != null)
+                    {
+                        foreach (var property in properties)
+                        {
+                            builder.Set(property.Key, property.Value);
+                        }
+                    }
+
+                    Tracker.Send(builder.Build());
+                }
+            }
+            catch (Exception)
+            {
             }
         }
 
@@ -55,39 +61,46 @@ namespace TinyInsightsLib.GoogleAnalytics
 
         public virtual async Task TrackEventAsync(string eventName, Dictionary<string, string> properties)
         {
-            string action = string.Empty;
-            string label = string.Empty;
-            int number = 0;
-
-            if(properties != null && properties.ContainsKey("action"))
+            try
             {
-                action = properties["action"];
-            }
+                string action = string.Empty;
+                string label = string.Empty;
+                int number = 0;
 
-            if (properties != null && properties.ContainsKey("number"))
-            {
-                int.TryParse(properties["number"], out number);
-            }
-
-            if (properties != null && properties.ContainsKey("label"))
-            {
-                label = properties["label"];
-            }
-
-            var eventToTrack = DictionaryBuilder.CreateEvent(eventName.ToLower(), action.ToLower(), label.ToLower(), number).Build();
-
-            if (properties != null)
-            {
-                foreach (var property in properties)
+                if (properties != null && properties.ContainsKey("action"))
                 {
-                    if (property.Key != "action" && property.Key != "label" && property.Key != "number")
+                    action = properties["action"];
+                }
+
+                if (properties != null && properties.ContainsKey("number"))
+                {
+                    int.TryParse(properties["number"], out number);
+                }
+
+                if (properties != null && properties.ContainsKey("label"))
+                {
+                    label = properties["label"];
+                }
+
+                var eventToTrack = DictionaryBuilder.CreateEvent(eventName.ToLower(), action.ToLower(), label.ToLower(), number).Build();
+
+                if (properties != null)
+                {
+                    foreach (var property in properties)
                     {
-                        eventToTrack.Add(NSObject.FromObject(property.Key), NSObject.FromObject(property.Value));
+                        if (property.Key != "action" && property.Key != "label" && property.Key != "number")
+                        {
+                            eventToTrack.Add(NSObject.FromObject(property.Key), NSObject.FromObject(property.Value));
+                        }
                     }
                 }
-            }
 
-            Tracker.Send(eventToTrack);
+                Tracker.Send(eventToTrack);
+            }
+            catch (Exception ex)
+            {
+                _ = TinyInsights.TrackErrorAsync(ex);
+            }
         }
 
         public virtual async Task TrackPageViewAsync(string viewName)
@@ -97,40 +110,54 @@ namespace TinyInsightsLib.GoogleAnalytics
 
         public virtual async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
         {
-            Tracker.Set(GaiConstants.ScreenName, viewName);
-
-            var viewToTrack = DictionaryBuilder.CreateScreenView().Build();
-
-            if (properties != null)
+            try
             {
-                foreach (var property in properties)
-                {
-                    viewToTrack.Add(NSObject.FromObject(property.Key), NSObject.FromObject(property.Value));
-                }
-            }
+                Tracker.Set(GaiConstants.ScreenName, viewName);
 
-            Tracker.Send(viewToTrack);
+                var viewToTrack = DictionaryBuilder.CreateScreenView().Build();
+
+                if (properties != null)
+                {
+                    foreach (var property in properties)
+                    {
+                        viewToTrack.Add(NSObject.FromObject(property.Key), NSObject.FromObject(property.Value));
+                    }
+                }
+
+                Tracker.Send(viewToTrack);
+            }
+            catch (Exception ex)
+            {
+                _ = TinyInsights.TrackErrorAsync(ex);
+            }
         }
 
         public virtual async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success, int resultCode = 0, Exception exception = null)
         {
-            var dependencyToTrack = DictionaryBuilder.CreateTiming(dependencyType, duration.Milliseconds, dependencyName, success.ToString()).Build();
-
-            dependencyToTrack.Add((NSString)"ResultCode", (NSString)resultCode.ToString());
-
-            if (exception != null)
+            try
             {
-                dependencyToTrack.Add(NSObject.FromObject("Exception message"), NSObject.FromObject(exception.Message));
-                dependencyToTrack.Add(NSObject.FromObject("StackTrace"), NSObject.FromObject(exception.StackTrace));
+                var dependencyToTrack = DictionaryBuilder.CreateTiming(dependencyType, duration.Milliseconds, dependencyName, success.ToString()).Build();
 
-                if (exception.InnerException != null)
+                dependencyToTrack.Add((NSString)"ResultCode", (NSString)resultCode.ToString());
+
+                if (exception != null)
                 {
-                    dependencyToTrack.Add(NSObject.FromObject("Inner exception message"), NSObject.FromObject(exception.InnerException.Message));
-                    dependencyToTrack.Add(NSObject.FromObject("Inner exception stackTrace"), NSObject.FromObject(exception.InnerException.StackTrace));
-                }
-            }
+                    dependencyToTrack.Add(NSObject.FromObject("Exception message"), NSObject.FromObject(exception.Message));
+                    dependencyToTrack.Add(NSObject.FromObject("StackTrace"), NSObject.FromObject(exception.StackTrace));
 
-            Tracker.Send(dependencyToTrack);
+                    if (exception.InnerException != null)
+                    {
+                        dependencyToTrack.Add(NSObject.FromObject("Inner exception message"), NSObject.FromObject(exception.InnerException.Message));
+                        dependencyToTrack.Add(NSObject.FromObject("Inner exception stackTrace"), NSObject.FromObject(exception.InnerException.StackTrace));
+                    }
+                }
+
+                Tracker.Send(dependencyToTrack);
+            }
+            catch (Exception ex)
+            {
+                _ = TinyInsights.TrackErrorAsync(ex);
+            }
         }
     }
 }

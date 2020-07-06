@@ -34,31 +34,38 @@ namespace TinyInsightsLib.AppCenter
 
         public async Task TrackDependencyAsync(string dependencyType, string dependencyName, DateTimeOffset startTime, TimeSpan duration, bool success, int resultCode = 0, Exception exception = null)
         {
-            if(IsTrackDependencyEnabled)
+            try
             {
-
-                var properties = new Dictionary<string, string>();
-
-                properties.Add("DependencyType", dependencyType);
-                properties.Add("DependencyName", dependencyName);
-                properties.Add("Duration", duration.ToString());
-                properties.Add("StartTime", startTime.ToString());
-                properties.Add("Success", success.ToString());
-                properties.Add("ResultCode", resultCode.ToString());
-
-                if (exception != null)
+                if (IsTrackDependencyEnabled)
                 {
-                    properties.Add("Exception message", exception.Message);
-                    properties.Add("StackTrace", exception.StackTrace);
 
-                    if (exception.InnerException != null)
+                    var properties = new Dictionary<string, string>();
+
+                    properties.Add("DependencyType", dependencyType);
+                    properties.Add("DependencyName", dependencyName);
+                    properties.Add("Duration", duration.ToString());
+                    properties.Add("StartTime", startTime.ToString());
+                    properties.Add("Success", success.ToString());
+                    properties.Add("ResultCode", resultCode.ToString());
+
+                    if (exception != null)
                     {
-                        properties.Add("Inner exception message", exception.InnerException.Message);
-                        properties.Add("Inner exception stackTrace", exception.InnerException.StackTrace);
-                    }
-                }
+                        properties.Add("Exception message", exception.Message);
+                        properties.Add("StackTrace", exception.StackTrace);
 
-                Analytics.TrackEvent("Dependency", properties);
+                        if (exception.InnerException != null)
+                        {
+                            properties.Add("Inner exception message", exception.InnerException.Message);
+                            properties.Add("Inner exception stackTrace", exception.InnerException.StackTrace);
+                        }
+                    }
+
+                    Analytics.TrackEvent("Dependency", properties);
+                }
+            }
+            catch (Exception ex)
+            {
+                _= TinyInsights.TrackErrorAsync(ex);
             }
         }
 
@@ -72,24 +79,38 @@ namespace TinyInsightsLib.AppCenter
 
         public virtual async Task TrackEventAsync(string eventName, Dictionary<string, string> properties)
         {
-            if (IsTrackEventsEnabled)
+            try
             {
-                Analytics.TrackEvent(eventName, properties);
+                if (IsTrackEventsEnabled)
+                {
+                    Analytics.TrackEvent(eventName, properties);
+                }
+            }
+            catch (Exception ex)
+            {
+                _= TinyInsights.TrackErrorAsync(ex);
             }
         }
 
         public virtual async Task TrackPageViewAsync(string viewName, Dictionary<string, string> properties)
         {
-            if(IsTrackPageViewsEnabled)
+            try
             {
-                if(properties == null)
+                if (IsTrackPageViewsEnabled)
                 {
-                    properties = new Dictionary<string, string>();
+                    if (properties == null)
+                    {
+                        properties = new Dictionary<string, string>();
+                    }
+
+                    properties.Add("PageName", viewName);
+
+                    Analytics.TrackEvent("PageView", properties);
                 }
-
-                properties.Add("PageName", viewName);
-
-                Analytics.TrackEvent("PageView", properties);
+            }
+            catch (Exception ex)
+            {
+                _ = TinyInsights.TrackErrorAsync(ex);
             }
         }
     }
